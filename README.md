@@ -77,9 +77,13 @@ The Example Controller sets up a route at /example and implements all of the abo
 You can mix and match any of these queries:
 
 >  api.example.local/example?q=(name:Belle)
+
 >  api.example.local/example?fields=(name,location)
+
 >  api.example.local/example/5?fields=(name)
+
 >  api.example.local/example?type=csv
+
 >  api.example.local/example?q=(popular:true)&offset=1&limit=2&type=csv&fields=(name,location,prince)
 
 [phalcon]: http://phalconphp.com/index
