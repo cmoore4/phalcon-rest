@@ -37,32 +37,37 @@ URL Structure:
 The Fields:
 -----------
 
-*Search*
+**Search**
 
 Searches are determined by the 'q' parameter.  Following that is a parenthesis enclosed list of key:value pairs, separated by commas.
-ex: q=(name:Jonhson,city:Oklahoma)
 
-*Partial Responses*
+> ex: q=(name:Jonhson,city:Oklahoma)
+
+**Partial Responses**
 
 Partial responses are used to only return certain explicit fields from a record. They are determined by the 'fields' paramter, which is a list of field names separated by commas, enclosed in parenthesis.
-ex: fields=(id,name,location)
 
-*Limit and Offset*
+> ex: fields=(id,name,location)
+
+**Limit and Offset**
 
 Often used to paginate large result sets.  Offset is the record to start from, and limit is the number of records to return.
-ex: limit=20&offset=20   will return results 21 to 40
 
-*Return Type*
+> ex: limit=20&offset=20   will return results 21 to 40
+
+**Return Type**
 
 Overrides any accept headers.  JSON is assumed otherwise.  Return type handler must be implemented.
-ex: type=xml
 
-*Suppressed Error Codes*
+> ex: type=xml
+
+**Suppressed Error Codes**
 
 Some clients require all responses to be a 200 (Flash, for example), even if there was an application error.
 With this paramter included, the application will always return a 200 response code, and clients will be
 responsible for checking the response body to ensure a valid response.
-ex: suppress_error_codes=true
+
+> ex: suppress_error_codes=true
 
 [phalcon]: http://phalconphp.com/index
 [phalconDocs]: http://docs.phalconphp.com/en/latest/
