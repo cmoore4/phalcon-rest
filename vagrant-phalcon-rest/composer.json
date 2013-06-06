@@ -1,0 +1,20 @@
+{
+    "name": "jtreminio/vagrant-puppet-lamp",
+    "type": "project",
+    "description": "Non-PHP! Everything you need to get a LAMP-based Puppet/Vagrant VM up and running in seconds!",
+    "keywords": ["puppet", "vagrant", "vm", "virtual machine", "lamp"],
+    "homepage": "https://github.com/jtreminio/vagrant-puppet-lamp",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Juan Treminio",
+            "email": "jtreminio@gmail.com",
+            "homepage": "https://jtreminio.com"
+        }
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    }
+}
