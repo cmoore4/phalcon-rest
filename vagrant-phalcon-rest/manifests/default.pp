@@ -35,6 +35,13 @@ package { ['build-essential', 'vim', 'curl', 'git', 'gcc', 'autoconf']:
   require => Exec['apt-get update'],
 }
 
+host { "api.example.local":
+  ip => "127.0.0.1",
+}
+
+host { "example.local":
+  ip => "127.0.0.1",
+}
 
 /* Declare the apache class. */
 class { 'apache': }
@@ -50,7 +57,7 @@ apache::module { 'rewrite': }
 apache::module { 'headers': }
 
 /* Set up our vhosts */
-apache::vhost { 'example.local':
+apache::vhost { 'api.example.local':
   server_name   => 'api.example.local',
   docroot       => '/var/www/project',
   port          => '80',
