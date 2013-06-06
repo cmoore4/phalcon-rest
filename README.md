@@ -21,6 +21,9 @@ system could be incorporated, show simple cache strategies, and stub out basic r
 It is highly recommended to read through the index.php, HTTPException.php and RESTController.php files, as
 I've tried to comment them extensively.
 
+Also included is an .htaccess file for Apache servers that will help with CORS requests-- though it is
+not compliant with REST, it does help for development purposes.
+
 
 API Assumptions
 ---------------
@@ -28,29 +31,34 @@ API Assumptions
 URL Structure:
 
 ```
-/index.php/path1/path2?q=(search1:value1,search2:value2)&fields=field1,field2,field3&limit=10&offest=20&type=csv&suppress_error_codes=true
+/path1/path2?q=(search1:value1,search2:value2)&fields=field1,field2,field3&limit=10&offest=20&type=csv&suppress_error_codes=true
 ```
 
 The Fields:
 -----------
 
 *Search*
+
 Searches are determined by the 'q' parameter.  Following that is a parenthesis enclosed list of key:value pairs, separated by commas.
 ex: q=(name:Jonhson,city:Oklahoma)
 
 *Partial Responses*
+
 Partial responses are used to only return certain explicit fields from a record. They are determined by the 'fields' paramter, which is a list of field names separated by commas, enclosed in parenthesis.
 ex: fields=(id,name,location)
 
 *Limit and Offset*
+
 Often used to paginate large result sets.  Offset is the record to start from, and limit is the number of records to return.
 ex: limit=20&offset=20   will return results 21 to 40
 
 *Return Type*
+
 Overrides any accept headers.  JSON is assumed otherwise.  Return type handler must be implemented.
 ex: type=xml
 
 *Suppressed Error Codes*
+
 Some clients require all responses to be a 200 (Flash, for example), even if there was an application error.
 With this paramter included, the application will always return a 200 response code, and clients will be
 responsible for checking the response body to ensure a valid response.

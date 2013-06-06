@@ -1,0 +1,12 @@
+Header add Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type"
+Header add Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+Header add Access-Control-Allow-Credentials: true
+
+RewriteEngine On
+
+# Only ever allow requests to the index page,
+# No other files should ever be served by this directory.
+# Assets must live on another subdomain, in another location.
+RewriteCond   %{REQUEST_URI}    !=/v1/index.php
+RewriteRule   (.*)$         index.php?_url=/$1 [QSA,L]
