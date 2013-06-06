@@ -50,15 +50,9 @@ apache::module { 'rewrite': }
 apache::module { 'headers': }
 
 /* Set up our vhosts */
-apache::vhost { 'po.carrollton.local':
-  server_name   => 'po.carrollton.local',
-  docroot       => '/var/www/order-system/webroot',
-  port          => '80',
-  env_variables => ['APP_ENV dev']
-}
-apache::vhost { 'api.po.carrollton.local':
-  server_name   => 'api.po.carrollton.local',
-  docroot       => '/var/www/order-system/api',
+apache::vhost { 'example.local':
+  server_name   => 'api.example.local',
+  docroot       => '/var/www/project',
   port          => '80',
   env_variables => ['APP_ENV dev']
 }
@@ -114,19 +108,4 @@ php::ini { 'custom':
   value  => ['display_errors = On', 'error_reporting = -1'],
   target => 'custom.ini',
   service => 'apache',
-}
-
-
-/* Set the mysql root user. */
-class { 'mysql':
-  root_password => 'p0SYSus3r',
-}
-
-/* Create initial database with user and all privs*/
-mysql::grant { 'cg_purchase_orders_2':
-  mysql_privileges => 'ALL',
-  mysql_password => 'p0SYSus3r',
-  mysql_db => 'cg_purchase_orders_2',
-  mysql_user => 'pouser',
-  mysql_host => 'localhost',
 }
