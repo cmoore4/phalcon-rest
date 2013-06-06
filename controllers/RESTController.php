@@ -70,8 +70,8 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	/**
 	 * Constructor calls the parse method.
 	 */
-	public function __construct(){
-		parent::__construct();
+	public function __construct($di){
+		parent::__construct($di);
 		$this->parseRequest($this->allowedFields);
 	}
 
