@@ -4,7 +4,6 @@ use Phalcon\DI\FactoryDefault as DefaultDI,
 	Phalcon\Mvc\Micro\Collection,
 	Phalcon\Config\Adapter\Ini as IniConfig,
 	Phalcon\Loader;
-setlocale(LC_MONETARY, 'en_US');
 
 /** 
  * By default, namespaces are assumed to be the same as the path.
@@ -34,19 +33,26 @@ $di->setShared('config', function() {
 	return new IniConfig("config/config.ini");
 });
 
+// As soon as we request the session service, it will be started.
+$di->setShared('session', function(){
+	$session = new \Phalcon\Session\Adapter\Files();
+	$session->start();
+	return $session;
+});
+
 $di->set('modelsCache', function() {
 
-        //Cache data for one day by default
-        $frontCache = new \Phalcon\Cache\Frontend\Data(array(
-                'lifetime' => 3600
-        ));
+	//Cache data for one day by default
+	$frontCache = new \Phalcon\Cache\Frontend\Data(array(
+		'lifetime' => 3600
+	));
 
-        //Memcached connection settings
-        $cache = new \Phalcon\Cache\Backend\File($frontCache, array(
-                'cacheDir' => __DIR__ . '/cache/'
-        ));
+	//File cache settings
+	$cache = new \Phalcon\Cache\Backend\File($frontCache, array(
+		'cacheDir' => __DIR__ . '/cache/'
+	));
 
-        return $cache;
+	return $cache;
 });
 
 /**
@@ -204,7 +210,7 @@ $app->after(function() use ($app) {
 		header('Content-type: application/csv');
 		header('Content-Disposition: attachment; filename="'.time().'.csv"');
 		header('Pragma: no-cache');
-    	header('Expires: 0');
+		header('Expires: 0');
 		
 		// We write directly to out, which means we don't ever save this file to disk.
 		$handle = fopen('php://output', 'w');

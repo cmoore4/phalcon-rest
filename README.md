@@ -28,11 +28,15 @@ not compliant with REST, it does help for development purposes.
 API Assumptions
 ---------------
 
-URL Structure:
+**URL Structure**
 
 ```
 /path1/path2?q=(search1:value1,search2:value2)&fields=field1,field2,field3&limit=10&offest=20&type=csv&suppress_error_codes=true
 ```
+
+**Request Bodies**
+
+Request bodies will be submitted as valid JSON.
 
 The Fields
 -----------
