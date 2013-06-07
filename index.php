@@ -14,7 +14,8 @@ $loader = new Loader();
 $loader->registerNamespaces(array(
 	'PhalconRest\Models' => __DIR__ . '/models/',
 	'PhalconRest\Controllers' => __DIR__ . '/controllers/',
-	'PhalconRest\Exceptions' => __DIR__ . '/exceptions/'
+	'PhalconRest\Exceptions' => __DIR__ . '/exceptions/',
+	'PhalconRest\Responses' => __DIR__ . '/responses/'
 ))->register();
 
 /**
@@ -185,23 +186,18 @@ $app->mount($exampleCollection);
  * different response type handlers.  Below is an alternate csv handler.
  */
 $app->after(function() use ($app) {
+
 	//Respond by default as JSON
 	if(!$app->request->get('type') || $app->request->get('type') == 'json'){
-		
+
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
 		
-		$records = arrayKeysToSnake($records);
-		// Provide an envelope for all JSON responses.  '_meta' and 'records' are the objects. 
-		$message = array();
-		$message['_meta'] = array(
-			'status' => 'SUCCESS',
-			'count' => count($records)
-		); 
-		$message['records'] = $records;
+		$response = new \PhalconRest\Responses\JSONResponse($app->getDI());
+		$response->useEnvelope(true) //this is default behavior
+			->convertSnakeCase(true) //this is also default behavior
+			->send($records);
 		
-		$app->response->setJsonContent($message);
-		$app->response->send();
 		return;
 	}
 	else if($app->request->get('type') == 'csv'){
@@ -272,36 +268,3 @@ set_exception_handler(function($exception) use ($app){
 
 $app->handle();
 
-
-
-
-
-// TODO: Refactor all the JSON response stuff into a helper class.
-
-/**
- * In-Place, recursive conversion of array keys in snake_Case to camelCase
- * @param  array $snakeArray Array with snake_keys
- * @return  no return value, array is edited in place
- */
-function arrayKeysToSnake($snakeArray){
-	foreach($snakeArray as $k=>$v){
-		if (is_array($v)){
-			$v = arrayKeysToSnake($v);
-		}
-		$snakeArray[snakeToCamel($k)] = $v;
-		if(snakeToCamel($k) != $k){
-			unset($snakeArray[$k]);
-		}
-	}
-	return $snakeArray;
-}
-
-/**
- * Replaces underscores with spaces, uppercases the first letters of each word, 
- * lowercases the very first letter, then strips the spaces
- * @param string $val String to be converted
- * @return string     Converted string
- */
-function snakeToCamel($val) {
-	return str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $val))));
-}
