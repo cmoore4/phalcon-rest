@@ -34,7 +34,7 @@ URL Structure:
 /path1/path2?q=(search1:value1,search2:value2)&fields=field1,field2,field3&limit=10&offest=20&type=csv&suppress_error_codes=true
 ```
 
-The Fields:
+The Fields
 -----------
 
 **Search**
@@ -69,7 +69,7 @@ responsible for checking the response body to ensure a valid response.
 
 > ex: suppress_error_codes=true
 
-Responses:
+Responses
 ---------
 
 All route controllers must return an array.  This array is used to create the response object.
@@ -110,6 +110,42 @@ name,location,prince
 Nala,"Pride Rock",Simba
 "Sleeping Beauty",Castle,Charming
 ```
+
+Errors
+-------
+
+PhalconRest\Exception\HTTPException extends PHP's native exceptions.  Throwing this type of exception 
+returns a nicely formatted JSON response to the client.
+
+```
+throw new \PhalconRest\Exceptions\HTTPException(
+	'Could not return results in specified format',
+	403,
+	array(
+		'dev' => 'Could not understand type specified by type paramter in query string.',
+		'internalCode' => 'NF1000',
+		'more' => 'Type may not be implemented. Choose either "csv" or "json"'	
+	)
+);
+```
+
+Returns this:
+
+```
+{
+    "_meta": {
+        "status": "ERROR"
+    },
+    "error": {
+        "devMessage": "Could not understand type specified by type paramter in query string.",
+        "error": 403,
+        "errorCode": "NF1000",
+        "more": "Type may not be implemented. Choose either \"csv\" or \"json\"",
+        "userMessage": "Could not return results in specified format"
+    }
+}
+```
+
 
 Example Controller
 -------------------
