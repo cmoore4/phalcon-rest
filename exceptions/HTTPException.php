@@ -25,13 +25,15 @@ class HTTPException extends \Exception{
 		//query string, filter, default
 		if(!$req->get('suppress_response_codes', null, null)){
 			$res->setStatusCode($this->getCode(), $this->response)->sendHeaders();
+		} else {
+			$res->setStatusCode('200', 'OK')->sendHeaders();
 		}
 		$res->setJsonContent(array(
+			'error' => $this->getCode(),
 			'userMessage' => $this->getMessage(),
 			'devMessage' => $this->devMessage,
 			'more' => $this->additionalInfo,
-			'errorCode' => $this->errorCode,
-			'status' => $this->getCode()
+			'errorCode' => $this->errorCode
 		));
 		$res->send();
 		

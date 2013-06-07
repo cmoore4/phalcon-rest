@@ -139,7 +139,7 @@ $app->before(function() use ($app, $di) {
 	}
 
 	// If we made it this far, we have no valid auth method, throw a 401.
-	throw new POSys\Exceptions\HTTPException(
+	throw new \PhalconRest\Exceptions\HTTPException(
 		'Must login or provide credentials.',
 		401,
 		array(
@@ -201,6 +201,22 @@ $app->after(function() use ($app) {
 		fclose($handle);
 		return;
 	}
+});
+
+/**
+ * The notFound service is the default handler function that runs when no route was matched.
+ * We set a 404 here unless there's a suppress error codes.
+ */
+$app->notFound(function () use ($app) {
+	throw new \PhalconRest\Exceptions\HTTPException(
+		'Not Found.',
+		404,
+		array(
+			'dev' => 'That route was not found on the server.',
+			'internalCode' => 'NF1000',
+			'more' => 'Check route for mispellings.'
+		)
+	);
 });
 
 /**
