@@ -181,25 +181,55 @@ $app->mount($exampleCollection);
 $app->after(function() use ($app) {
 	//Respond by default as JSON
 	if(!$app->request->get('type') || $app->request->get('type') == 'json'){
-		$app->response->setJsonContent($app->getReturnedValue());
+		
+		// Results returned from the route's controller.  All Controllers should return an array
+		$records = $app->getReturnedValue();
+		
+		// Provide an envelope for all JSON responses.  '_meta' and 'records' are the objects. 
+		$message = array();
+		$message['_meta'] = array(
+			'status' => 'SUCCESS',
+			'count' => count($records)
+		); 
+		$message['records'] = $records;
+		
+		$app->response->setJsonContent($message);
 		$app->response->send();
 		return;
 	}
 	else if($app->request->get('type') == 'csv'){
-		$return = $app->getReturnedValue();
+		$records = $app->getReturnedValue();
 
+		// Headers for a CSV
 		header('Content-type: application/csv');
 		header('Content-Disposition: attachment; filename="'.time().'.csv"');
 		header('Pragma: no-cache');
     	header('Expires: 0');
 		
+		// We write directly to out, which means we don't ever save this file to disk.
 		$handle = fopen('php://output', 'w');
-		fputcsv($handle, array_keys($return[0]));
-		foreach($return as $line){
+
+		// The keys of the first result record will be the first line of the CSV (headers)
+		fputcsv($handle, array_keys($records[0]));
+
+		// Write each record as a csv line.
+		foreach($records as $line){
 			fputcsv($handle, $line);
 		}
+
 		fclose($handle);
 		return;
+	}
+	else {
+		throw new \PhalconRest\Exceptions\HTTPException(
+			'Could not return results in specified format',
+			403,
+			array(
+				'dev' => 'Could not understand type specified by type paramter in query string.',
+				'internalCode' => 'NF1000',
+				'more' => 'Type may not be implemented. Choose either "csv" or "json"'	
+			)
+		);
 	}
 });
 

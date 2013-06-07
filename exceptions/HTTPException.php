@@ -29,11 +29,16 @@ class HTTPException extends \Exception{
 			$res->setStatusCode('200', 'OK')->sendHeaders();
 		}
 		$res->setJsonContent(array(
-			'error' => $this->getCode(),
-			'userMessage' => $this->getMessage(),
-			'devMessage' => $this->devMessage,
-			'more' => $this->additionalInfo,
-			'errorCode' => $this->errorCode
+			'_meta' => array(
+				'status' => 'ERROR'
+			),
+			'error' => array(
+				'error' => $this->getCode(),
+				'userMessage' => $this->getMessage(),
+				'devMessage' => $this->devMessage,
+				'more' => $this->additionalInfo,
+				'errorCode' => $this->errorCode,
+			)
 		));
 		$res->send();
 		
