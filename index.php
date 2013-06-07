@@ -201,26 +201,11 @@ $app->after(function() use ($app) {
 		return;
 	}
 	else if($app->request->get('type') == 'csv'){
-		$records = $app->getReturnedValue();
-
-		// Headers for a CSV
-		header('Content-type: application/csv');
-		header('Content-Disposition: attachment; filename="'.time().'.csv"');
-		header('Pragma: no-cache');
-		header('Expires: 0');
 		
-		// We write directly to out, which means we don't ever save this file to disk.
-		$handle = fopen('php://output', 'w');
+		$records = $app->getReturnedValue();
+		$response = new \PhalconRest\Responses\CSVResponse($app->getDI());
+		$response->useHeaderRow(true)->send($records);
 
-		// The keys of the first result record will be the first line of the CSV (headers)
-		fputcsv($handle, array_keys($records[0]));
-
-		// Write each record as a csv line.
-		foreach($records as $line){
-			fputcsv($handle, $line);
-		}
-
-		fclose($handle);
 		return;
 	}
 	else {

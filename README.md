@@ -105,13 +105,17 @@ GET /example?q=(popular:true)&offset=1&limit=2&fields=(name,location,prince)
 }
 ```
 
+The envelope can be suppressed for responses via the 'envelope=false' query paramter.  This will return just the record set by itself as the body, and the meta information via X- headers.
+
 Often times, database field names are snake_cased.  However, when working with an API, developers 
 genreally prefer JSON fields to be returned in camelCase (many API requests are from browsers, in JS).
 This project will by default convert all keys in a records response from snake_case to camelCase.
 
+This can be turned off for your API by setting the JSONResponse's function "convertSnakeCase(false)".
+
 **CSV**
 
-CSV is the other implemented handler.  It uses the first record's keys as the header row, and then creates a csv from each row in the array.
+CSV is the other implemented handler.  It uses the first record's keys as the header row, and then creates a csv from each row in the array.  The header row can be toggled off for responses.
 
 ```
 name,location,princeName

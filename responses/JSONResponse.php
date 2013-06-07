@@ -12,6 +12,8 @@ class JSONResponse extends Response{
 
 	public function send($records){
 
+		$response = $this->di->get('response');
+
 		// If the query string 'envelope' is set to false, do not use the envelope.
 		// Instead, return headers.
 		$request = $this->di->get('request');
@@ -33,12 +35,13 @@ class JSONResponse extends Response{
 			); 
 			$message['records'] = $records;
 		} else {
-			//TODO: HTTP headers in palce of envelope
+			$response->setHeader('X-Record-Count', count($records));
+			$response->setHeader('X-Status', 'SUCCESS');
 			$message = $records;
 		}
 		
-		$this->di->get('response')->setJsonContent($message);
-		$this->di->get('response')->send();
+		$response->setJsonContent($message);
+		$response->send();
 
 		return $this;
 	}
@@ -52,34 +55,5 @@ class JSONResponse extends Response{
 		$this->envelope = (bool) $envelope;
 		return $this;
 	}
-
-	/**
-	 * In-Place, recursive conversion of array keys in snake_Case to camelCase
-	 * @param  array $snakeArray Array with snake_keys
-	 * @return  no return value, array is edited in place
-	 */
-	private function arrayKeysToSnake($snakeArray){
-		foreach($snakeArray as $k=>$v){
-			if (is_array($v)){
-				$v = $this->arrayKeysToSnake($v);
-			}
-			$snakeArray[$this->snakeToCamel($k)] = $v;
-			if($this->snakeToCamel($k) != $k){
-				unset($snakeArray[$k]);
-			}
-		}
-		return $snakeArray;
-	}
-
-	/**
-	 * Replaces underscores with spaces, uppercases the first letters of each word, 
-	 * lowercases the very first letter, then strips the spaces
-	 * @param string $val String to be converted
-	 * @return string     Converted string
-	 */
-	private function snakeToCamel($val) {
-		return str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $val))));
-	}
-
 
 }
