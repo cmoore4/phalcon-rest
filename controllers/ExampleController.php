@@ -5,13 +5,13 @@ use \PhalconRest\Exceptions\HTTPException;
 class ExampleController extends RESTController{
 
 	private $exampleRecords = array(
-		array('id' => 1, 'name' => 'Ariel', 'location' => 'Under The Sea', 'prince' => 'Eric', 'popular' => 'false'),
-		array('id' => 2, 'name' => 'Snow White', 'location' => 'Forest', 'prince' => 'The Prince', 'popular' => 'true'),
-		array('id' => 3, 'name' => 'Belle', 'location' => 'France', 'prince' => 'The Beast', 'popular' => 'false'),
-		array('id' => 4, 'name' => 'Nala', 'location' => 'Pride Rock', 'prince' => 'Simba', 'popular' => 'true'),
-		array('id' => 5, 'name' => 'Sleeping Beauty', 'location' => 'Castle', 'prince' => 'Charming', 'popular' => 'true'),
-		array('id' => 6, 'name' => 'Jasmine', 'location' => 'Aghraba', 'prince' => 'Aladdin', 'popular' => 'true'),
-		array('id' => 7, 'name' => 'Mulan', 'location' => 'China', 'prince' => 'Li Shang', 'popular' => 'false')
+		array('id' => 1, 'name' => 'Ariel', 'location' => 'Under The Sea', 'prince_name' => 'Eric', 'popular' => 'false'),
+		array('id' => 2, 'name' => 'Snow White', 'location' => 'Forest', 'prince_name' => 'The Prince', 'popular' => 'true'),
+		array('id' => 3, 'name' => 'Belle', 'location' => 'France', 'prince_name' => 'The Beast', 'popular' => 'false'),
+		array('id' => 4, 'name' => 'Nala', 'location' => 'Pride Rock', 'prince_name' => 'Simba', 'popular' => 'true'),
+		array('id' => 5, 'name' => 'Sleeping Beauty', 'location' => 'Castle', 'prince_name' => 'Charming', 'popular' => 'true'),
+		array('id' => 6, 'name' => 'Jasmine', 'location' => 'Aghraba', 'prince_name' => 'Aladdin', 'popular' => 'true'),
+		array('id' => 7, 'name' => 'Mulan', 'location' => 'China', 'prince_name' => 'Li Shang', 'popular' => 'false')
 	);
 
 	function get(){

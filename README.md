@@ -1,7 +1,7 @@
 PhalconRest
 ===========
 
-A Base project for APIs using the [Phalcon][phalcon] framework
+A base project for APIs using the [Phalcon][phalcon] framework
 ---------------------------------------------------
 
 The Phalcon framework is an awesome PHP framework that exists as a C-extension to the language.
@@ -105,12 +105,16 @@ GET /example?q=(popular:true)&offset=1&limit=2&fields=(name,location,prince)
 }
 ```
 
+Often times, database field names are snake_cased.  However, when working with an API, developers 
+genreally prefer JSON fields to be returned in camelCase (many API requests are from browsers, in JS).
+This project will by default convert all keys in a records response from snake_case to camelCase.
+
 **CSV**
 
 CSV is the other implemented handler.  It uses the first record's keys as the header row, and then creates a csv from each row in the array.
 
 ```
-name,location,prince
+name,location,princeName
 Nala,"Pride Rock",Simba
 "Sleeping Beauty",Castle,Charming
 ```
@@ -165,7 +169,7 @@ You can mix and match any of these queries:
 
 >  api.example.local/example?type=csv
 
->  api.example.local/example?q=(popular:true)&offset=1&limit=2&type=csv&fields=(name,location,prince)
+>  api.example.local/example?q=(popular:true)&offset=1&limit=2&type=csv&fields=(name,location)
 
 [phalcon]: http://phalconphp.com/index
 [phalconDocs]: http://docs.phalconphp.com/en/latest/

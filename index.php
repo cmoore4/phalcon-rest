@@ -191,6 +191,7 @@ $app->after(function() use ($app) {
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
 		
+		$records = arrayKeysToSnake($records);
 		// Provide an envelope for all JSON responses.  '_meta' and 'records' are the objects. 
 		$message = array();
 		$message['_meta'] = array(
@@ -270,3 +271,37 @@ set_exception_handler(function($exception) use ($app){
 });
 
 $app->handle();
+
+
+
+
+
+// TODO: Refactor all the JSON response stuff into a helper class.
+
+/**
+ * In-Place, recursive conversion of array keys in snake_Case to camelCase
+ * @param  array $snakeArray Array with snake_keys
+ * @return  no return value, array is edited in place
+ */
+function arrayKeysToSnake($snakeArray){
+	foreach($snakeArray as $k=>$v){
+		if (is_array($v)){
+			$v = arrayKeysToSnake($v);
+		}
+		$snakeArray[snakeToCamel($k)] = $v;
+		if(snakeToCamel($k) != $k){
+			unset($snakeArray[$k]);
+		}
+	}
+	return $snakeArray;
+}
+
+/**
+ * Replaces underscores with spaces, uppercases the first letters of each word, 
+ * lowercases the very first letter, then strips the spaces
+ * @param string $val String to be converted
+ * @return string     Converted string
+ */
+function snakeToCamel($val) {
+	return str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $val))));
+}
