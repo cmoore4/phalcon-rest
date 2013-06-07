@@ -69,6 +69,47 @@ responsible for checking the response body to ensure a valid response.
 
 > ex: suppress_error_codes=true
 
+Responses:
+---------
+
+All route controllers must return an array.  This array is used to create the response object.
+
+**JSON**
+
+JSON is the default response type.  It comes with an envelope wrapper, so responses will look like this:
+
+```
+GET /example?q=(popular:true)&offset=1&limit=2&fields=(name,location,prince)
+
+{
+    "_meta": {
+        "count": 2,
+        "status": "SUCCESS"
+    },
+    "records": [
+        {
+            "location": "Pride Rock",
+            "name": "Nala",
+            "prince": "Simba"
+        },
+        {
+            "location": "Castle",
+            "name": "Sleeping Beauty",
+            "prince": "Charming"
+        }
+    ]
+}
+```
+
+**CSV**
+
+CSV is the other implemented handler.  It uses the first record's keys as the header row, and then creates a csv from each row in the array.
+
+```
+name,location,prince
+Nala,"Pride Rock",Simba
+"Sleeping Beauty",Castle,Charming
+```
 
 Example Controller
 -------------------
