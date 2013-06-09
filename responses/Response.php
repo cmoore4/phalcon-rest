@@ -3,7 +3,7 @@ namespace PhalconRest\Responses;
 
 class Response extends \Phalcon\DI\Injectable{
 
-	public function __construct($di){
+	public function __construct(){
 		//parent::__construct();
 		$di = \Phalcon\DI::getDefault();
 		$this->setDI($di);

@@ -174,9 +174,10 @@ $exampleCollection = new Phalcon\Mvc\Micro\Collection();
 	// First paramter is the route, which with the collection prefix here would be GET /example/
 	// Second paramter is the function name of the Controller.
 	$exampleCollection->get('/', 'get');
+
+	// $id will be passed as a parameter to the Controller's specified function
 	$exampleCollection->get('/{id:[0-9]+}', 'getOne');
 	$exampleCollection->post('/', 'post');
-	// $id will be passed as a parameter to the Controller's delete function
 	$exampleCollection->delete('/{id:[0-9]+}', 'delete');
 $app->mount($exampleCollection);
 

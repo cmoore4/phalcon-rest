@@ -6,8 +6,8 @@ class JSONResponse extends Response{
 	protected $snake = true;
 	protected $envelope = true;
 
-	public function __construct($di){
-		parent::__construct($di);
+	public function __construct(){
+		parent::__construct();
 	}
 
 	public function send($records){

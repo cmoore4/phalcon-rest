@@ -5,8 +5,8 @@ class CSVResponse extends Response{
 
 	protected $headers = true;
 
-	public function __construct($di){
-		parent::__construct($di);
+	public function __construct(){
+		parent::__construct();
 	}
 
 	public function send($records){
