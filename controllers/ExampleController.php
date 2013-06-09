@@ -58,9 +58,16 @@ class ExampleController extends RESTController{
 		return $results;
 	}
 
-	public function options(){
+	public function optionsBase(){
 		$request = $this->di->get('request');
-		
+		$request->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD');
+		return true;
+	}
+
+	public function optionsOne(){
+		$request = $this->di->get('request');
+		$request->setHeader('Access-Control-Allow-Methods', 'GET, PUT, PATCH, DELETE, OPTIONS, HEAD');
+		return true;
 	}
 
 	public function respond($results){

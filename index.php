@@ -168,7 +168,8 @@ $exampleCollection = new Phalcon\Mvc\Micro\Collection();
 		->setPrefix('/example')
 		->setHandler(new PhalconRest\Controllers\ExampleController());
 
-	$exampleCollection->options('/', 'options');
+	$exampleCollection->options('/', 'optionsBase');
+	$exampleCollection->options('/{id}', 'optionsOne');
 
 	// First paramter is the route, which with the collection prefix here would be GET /example/
 	// Second paramter is the function name of the Controller.
@@ -189,7 +190,14 @@ $app->mount($exampleCollection);
  */
 $app->after(function() use ($app) {
 
-	//Respond by default as JSON
+	// OPTIONS have no body, send the headers, exit
+	if($app->request->getMethod() == 'OPTIONS'){
+		$app->response->setStatusCode('200', 'OK');
+		$app->response->send();
+		return;
+	}
+
+	// Respond by default as JSON
 	if(!$app->request->get('type') || $app->request->get('type') == 'json'){
 
 		// Results returned from the route's controller.  All Controllers should return an array
