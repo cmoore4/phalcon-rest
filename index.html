@@ -1,0 +1,228 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Phalcon REST Base by cmoore4</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/cmoore4/phalcon-rest">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/cmoore4/phalcon-rest/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/cmoore4/phalcon-rest/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Phalcon REST Base</h1>
+          <p>Best Practices for APIs Using the Phalcon Framework</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/cmoore4">cmoore4</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="phalconrest" class="anchor" href="#phalconrest"><span class="octicon octicon-link"></span></a>PhalconRest</h1>
+
+<h2>
+<a name="a-base-project-for-apis-using-the-phalcon-framework" class="anchor" href="#a-base-project-for-apis-using-the-phalcon-framework"><span class="octicon octicon-link"></span></a>A base project for APIs using the <a href="http://phalconphp.com/index">Phalcon</a> framework</h2>
+
+<p>The Phalcon framework is an awesome PHP framework that exists as a C-extension to the language.
+This allows it to be incredibly fast.  But aside from its quickness, it is an amazingly
+powerful fraemwork with excellent <a href="http://docs.phalconphp.com/en/latest/">documentation</a> that follows many best practises of
+modern software development.  This includes using the Direct Injection pattern to handle service
+resolution across classes, a PSR-0 compliant autoloader, MVC architecture (or not), caching
+handlers for database, flatfile, redis, etc.. and a ton of additional features.</p>
+
+<p>The purpose of this project is to establish a base project with Phalcon that uses the best practices
+of both the Phalcon Framework and <a href="https://blog.apigee.com/detail/announcement_new_ebook_on_web_api_design">API Design</a>, as discussed in the seminal work from Apigee.</p>
+
+<p>This project establishes much of the boilerplate needed to create a well-designed API.  It doesn't seek
+to implement any of your program logic, merely facilitate the parsing of requests, show how an auth
+system could be incorporated, show simple cache strategies, and stub out basic response handling.</p>
+
+<p>It is highly recommended to read through the index.php, HTTPException.php and RESTController.php files, as
+I've tried to comment them extensively.</p>
+
+<p>Also included is an .htaccess file for Apache servers that will help with CORS requests-- though it is
+not compliant with REST, it does help for development purposes.</p>
+
+<h2>
+<a name="api-assumptions" class="anchor" href="#api-assumptions"><span class="octicon octicon-link"></span></a>API Assumptions</h2>
+
+<p><strong>URL Structure</strong></p>
+
+<pre><code>/path1/path2?q=(search1:value1,search2:value2)&amp;fields=field1,field2,field3&amp;limit=10&amp;offest=20&amp;type=csv&amp;suppress_error_codes=true
+</code></pre>
+
+<p><strong>Request Bodies</strong></p>
+
+<p>Request bodies will be submitted as valid JSON.</p>
+
+<h2>
+<a name="the-fields" class="anchor" href="#the-fields"><span class="octicon octicon-link"></span></a>The Fields</h2>
+
+<p><strong>Search</strong></p>
+
+<p>Searches are determined by the 'q' parameter.  Following that is a parenthesis enclosed list of key:value pairs, separated by commas.</p>
+
+<blockquote>
+<p>ex: q=(name:Jonhson,city:Oklahoma)</p>
+</blockquote>
+
+<p><strong>Partial Responses</strong></p>
+
+<p>Partial responses are used to only return certain explicit fields from a record. They are determined by the 'fields' paramter, which is a list of field names separated by commas, enclosed in parenthesis.</p>
+
+<blockquote>
+<p>ex: fields=(id,name,location)</p>
+</blockquote>
+
+<p><strong>Limit and Offset</strong></p>
+
+<p>Often used to paginate large result sets.  Offset is the record to start from, and limit is the number of records to return.</p>
+
+<blockquote>
+<p>ex: limit=20&amp;offset=20   will return results 21 to 40</p>
+</blockquote>
+
+<p><strong>Return Type</strong></p>
+
+<p>Overrides any accept headers.  JSON is assumed otherwise.  Return type handler must be implemented.</p>
+
+<blockquote>
+<p>ex: type=xml</p>
+</blockquote>
+
+<p><strong>Suppressed Error Codes</strong></p>
+
+<p>Some clients require all responses to be a 200 (Flash, for example), even if there was an application error.
+With this paramter included, the application will always return a 200 response code, and clients will be
+responsible for checking the response body to ensure a valid response.</p>
+
+<blockquote>
+<p>ex: suppress_error_codes=true</p>
+</blockquote>
+
+<h2>
+<a name="responses" class="anchor" href="#responses"><span class="octicon octicon-link"></span></a>Responses</h2>
+
+<p>All route controllers must return an array.  This array is used to create the response object.</p>
+
+<p><strong>JSON</strong></p>
+
+<p>JSON is the default response type.  It comes with an envelope wrapper, so responses will look like this:</p>
+
+<pre><code>GET /example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;fields=(name,location,prince)
+
+{
+    "_meta": {
+        "count": 2,
+        "status": "SUCCESS"
+    },
+    "records": [
+        {
+            "location": "Pride Rock",
+            "name": "Nala",
+            "prince": "Simba"
+        },
+        {
+            "location": "Castle",
+            "name": "Sleeping Beauty",
+            "prince": "Charming"
+        }
+    ]
+}
+</code></pre>
+
+<p>The envelope can be suppressed for responses via the 'envelope=false' query paramter.  This will return just the record set by itself as the body, and the meta information via X- headers.</p>
+
+<p>Often times, database field names are snake_cased.  However, when working with an API, developers 
+genreally prefer JSON fields to be returned in camelCase (many API requests are from browsers, in JS).
+This project will by default convert all keys in a records response from snake_case to camelCase.</p>
+
+<p>This can be turned off for your API by setting the JSONResponse's function "convertSnakeCase(false)".</p>
+
+<p><strong>CSV</strong></p>
+
+<p>CSV is the other implemented handler.  It uses the first record's keys as the header row, and then creates a csv from each row in the array.  The header row can be toggled off for responses.</p>
+
+<pre><code>name,location,princeName
+Nala,"Pride Rock",Simba
+"Sleeping Beauty",Castle,Charming
+</code></pre>
+
+<h2>
+<a name="errors" class="anchor" href="#errors"><span class="octicon octicon-link"></span></a>Errors</h2>
+
+<p>PhalconRest\Exception\HTTPException extends PHP's native exceptions.  Throwing this type of exception 
+returns a nicely formatted JSON response to the client.</p>
+
+<pre><code>throw new \PhalconRest\Exceptions\HTTPException(
+    'Could not return results in specified format',
+    403,
+    array(
+        'dev' =&gt; 'Could not understand type specified by type paramter in query string.',
+        'internalCode' =&gt; 'NF1000',
+        'more' =&gt; 'Type may not be implemented. Choose either "csv" or "json"'  
+    )
+);
+</code></pre>
+
+<p>Returns this:</p>
+
+<pre><code>{
+    "_meta": {
+        "status": "ERROR"
+    },
+    "error": {
+        "devMessage": "Could not understand type specified by type paramter in query string.",
+        "error": 403,
+        "errorCode": "NF1000",
+        "more": "Type may not be implemented. Choose either \"csv\" or \"json\"",
+        "userMessage": "Could not return results in specified format"
+    }
+}
+</code></pre>
+
+<h2>
+<a name="example-controller" class="anchor" href="#example-controller"><span class="octicon octicon-link"></span></a>Example Controller</h2>
+
+<p>The Example Controller sets up a route at /example and implements all of the above query parameters.
+You can mix and match any of these queries:</p>
+
+<blockquote>
+<p>api.example.local/example?q=(name:Belle)</p>
+
+<p>api.example.local/example?fields=(name,location)</p>
+
+<p>api.example.local/example/5?fields=(name)</p>
+
+<p>api.example.local/example?type=csv</p>
+
+<p>api.example.local/example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;type=csv&amp;fields=(name,location)</p>
+</blockquote>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
