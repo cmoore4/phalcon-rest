@@ -1,12 +1,24 @@
+### CORS HEADERS ###
+
+# This has to be allowed per-referer if credentials are used.
+# Useful here for dev, but should be set programatically for production.
 Header add Access-Control-Allow-Origin "*"
+
+# Again, these are useful for dev, but bad for production
 Header add Access-Control-Allow-Headers "origin, x-requested-with, content-type"
 Header add Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
+
+# Allows for Basic auth
 Header add Access-Control-Allow-Credentials: true
 
-RewriteEngine On
+# Preflight only has to be made every 24 hours per resource
+Header add Access-Control-Max-Age: 86400
+
+### URL REWRITE TO index.php ###
 
 # Only ever allow requests to the index page,
 # No other files should ever be served by this directory.
 # Assets must live on another subdomain, in another location.
+RewriteEngine On
 RewriteCond   %{REQUEST_URI}    !=/v1/index.php
 RewriteRule   (.*)$         index.php?_url=/$1 [QSA,L]

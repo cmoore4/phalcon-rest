@@ -5,6 +5,7 @@ class Response extends \Phalcon\DI\Injectable{
 
 	public function __construct($di){
 		//parent::__construct();
+		$di = \Phalcon\DI::getDefault();
 		$this->setDI($di);
 	}
 

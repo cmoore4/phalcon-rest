@@ -166,7 +166,9 @@ $app->before(function() use ($app, $di) {
 $exampleCollection = new Phalcon\Mvc\Micro\Collection();
 	$exampleCollection->setLazy(true)
 		->setPrefix('/example')
-		->setHandler(new PhalconRest\Controllers\ExampleController($di));
+		->setHandler(new PhalconRest\Controllers\ExampleController());
+
+	$exampleCollection->options('/', 'options');
 
 	// First paramter is the route, which with the collection prefix here would be GET /example/
 	// Second paramter is the function name of the Controller.
@@ -193,7 +195,7 @@ $app->after(function() use ($app) {
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
 		
-		$response = new \PhalconRest\Responses\JSONResponse($app->getDI());
+		$response = new \PhalconRest\Responses\JSONResponse();
 		$response->useEnvelope(true) //this is default behavior
 			->convertSnakeCase(true) //this is also default behavior
 			->send($records);
@@ -203,7 +205,7 @@ $app->after(function() use ($app) {
 	else if($app->request->get('type') == 'csv'){
 		
 		$records = $app->getReturnedValue();
-		$response = new \PhalconRest\Responses\CSVResponse($app->getDI());
+		$response = new \PhalconRest\Responses\CSVResponse();
 		$response->useHeaderRow(true)->send($records);
 
 		return;

@@ -14,7 +14,7 @@ class ExampleController extends RESTController{
 		array('id' => 7, 'name' => 'Mulan', 'location' => 'China', 'prince_name' => 'Li Shang', 'popular' => 'false')
 	);
 
-	function get(){
+	public function get(){
 		if($this->isSearch){
 			$results = $this->search();
 		} else {
@@ -24,7 +24,7 @@ class ExampleController extends RESTController{
 		return $this->respond($results);
 	}
 
-	function getOne($id){
+	public function getOne($id){
 		$id--;
 		if(@count($this->exampleRecords[$id])){
 			return $this->respond($this->exampleRecords[$id]);
@@ -33,15 +33,15 @@ class ExampleController extends RESTController{
 		}
 	}
 
-	function post(){
+	public function post(){
 		return array('Post / stub');
 	}
 
-	function delete($id){
+	public function delete($id){
 		return array('Delete / stub');
 	}
 
-	function search(){
+	public function search(){
 		$results = array();
 		foreach($this->exampleRecords as $record){
 			$match = true;
@@ -58,7 +58,12 @@ class ExampleController extends RESTController{
 		return $results;
 	}
 
-	function respond($results){
+	public function options(){
+		$request = $this->di->get('request');
+		
+	}
+
+	public function respond($results){
 		if($this->isPartial){
 			$newResults = array();
 			$remove = array_diff(array_keys($this->exampleRecords[0]), $this->partialFields);
