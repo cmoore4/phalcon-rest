@@ -22,25 +22,31 @@ class HTTPException extends \Exception{
 
 		$res = $di->get('response');
 		$req = $di->get('request');
-		//query string, filter, default
+		
+			//query string, filter, default
 		if(!$req->get('suppress_response_codes', null, null)){
 			$res->setStatusCode($this->getCode(), $this->response)->sendHeaders();
 		} else {
 			$res->setStatusCode('200', 'OK')->sendHeaders();
 		}
-		$res->setJsonContent(array(
-			'_meta' => array(
-				'status' => 'ERROR'
-			),
-			'error' => array(
-				'error' => $this->getCode(),
-				'userMessage' => $this->getMessage(),
-				'devMessage' => $this->devMessage,
-				'more' => $this->additionalInfo,
-				'errorCode' => $this->errorCode,
-			)
-		));
-		$res->send();
+		
+		$error = array(
+			'errorCode' => $this->getCode(),
+			'userMessage' => $this->getMessage(),
+			'devMessage' => $this->devMessage,
+			'more' => $this->additionalInfo,
+			'applicationCode' => $this->errorCode,
+		);
+
+		if(!$req->get('type') || $req->get('type') == 'json'){
+			$response = new \PhalconRest\Responses\JSONResponse();
+			$response->send($error, true);	
+			return;
+		} else if($req->get('type') == 'csv'){
+			$response = new \PhalconRest\Responses\CSVResponse();
+			$response->send(array($error));
+			return;
+		}
 		
 		error_log(
 			'HTTPException: ' . $this->getFile() .

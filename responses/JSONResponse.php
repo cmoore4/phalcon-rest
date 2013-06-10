@@ -10,9 +10,10 @@ class JSONResponse extends Response{
 		parent::__construct();
 	}
 
-	public function send($records){
+	public function send($records, $error=false){
 
 		$response = $this->di->get('response');
+		$success = ($error) ? 'ERROR' : 'SUCCESS';
 
 		// If the query string 'envelope' is set to false, do not use the envelope.
 		// Instead, return headers.
@@ -30,13 +31,13 @@ class JSONResponse extends Response{
 			// Provide an envelope for JSON responses.  '_meta' and 'records' are the objects. 
 			$message = array();
 			$message['_meta'] = array(
-				'status' => 'SUCCESS',
-				'count' => count($records)
+				'status' => $success,
+				'count' => ($error) ? 1 : count($records)
 			); 
 			$message['records'] = $records;
 		} else {
 			$response->setHeader('X-Record-Count', count($records));
-			$response->setHeader('X-Status', 'SUCCESS');
+			$response->setHeader('X-Status', $success);
 			$message = $records;
 		}
 		
