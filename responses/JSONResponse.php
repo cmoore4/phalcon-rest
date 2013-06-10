@@ -41,6 +41,7 @@ class JSONResponse extends Response{
 			$message = $records;
 		}
 		
+		$response->setContentType('application/json');
 		$response->setJsonContent($message);
 		$response->send();
 
