@@ -12,17 +12,19 @@ resolution across classes, a PSR-0 compliant autoloader, MVC architecture (or no
 handlers for database, flatfile, redis, etc.. and a ton of additional features.
 
 The purpose of this project is to establish a base project with Phalcon that uses the best practices
-of both the Phalcon Framework and [API Design][apigeeBook], as discussed in the seminal work from Apigee.
+from the Phalcon Framework to implement best practises of [API Design][apigeeBook].
 
-This project establishes much of the boilerplate needed to create a well-designed API.  It doesn't seek
-to implement any of your program logic, merely facilitate the parsing of requests, show how an auth
-system could be incorporated, show simple cache strategies, and stub out basic response handling.
+Writing routes that respond with JSON is easy in any of the major frameworks.  What I've done here is to 
+go beyond that and extend the framework such that APIs written using this project are pragmatically 
+REST-ish and have conveniance methods and patterns implemented that are more than a simple
+'echo json_encode($array)'.
+
+Provided are robust Error messages, controllers that parse searching strings and partial responsese, 
+response classes for sending multiple MIME types based on the request, and examples of how to implement
+authentication in a few ways, as well as a few tempaltes for implementing common REST-ish tasks.
 
 It is highly recommended to read through the index.php, HTTPException.php and RESTController.php files, as
 I've tried to comment them extensively.
-
-Also included is an .htaccess file for Apache servers that will help with CORS requests-- though it is
-not compliant with REST, it does help for development purposes.
 
 
 API Assumptions
@@ -31,7 +33,7 @@ API Assumptions
 **URL Structure**
 
 ```
-/path1/path2?q=(search1:value1,search2:value2)&fields=field1,field2,field3&limit=10&offest=20&type=csv&suppress_error_codes=true
+/path1/path2?q=(search1:value1,search2:value2)&fields=(field1,field2,field3)&limit=10&offest=20&type=csv&suppress_error_codes=true
 ```
 
 **Request Bodies**
