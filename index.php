@@ -165,7 +165,8 @@ $app->before(function() use ($app, $di) {
  */
 $exampleCollection = new Phalcon\Mvc\Micro\Collection();
 	$exampleCollection->setLazy(true)
-		->setPrefix('/example')
+		// VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
+		->setPrefix('/v1/example') 
 		->setHandler(new PhalconRest\Controllers\ExampleController());
 
 	// Set Access-Control-Allow headers.

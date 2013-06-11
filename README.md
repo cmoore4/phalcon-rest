@@ -33,7 +33,7 @@ API Assumptions
 **URL Structure**
 
 ```
-/path1/path2?q=(search1:value1,search2:value2)&fields=(field1,field2,field3)&limit=10&offest=20&type=csv&suppress_error_codes=true
+/v1/path1/path2?q=(search1:value1,search2:value2)&fields=(field1,field2,field3)&limit=10&offest=20&type=csv&suppress_error_codes=true
 ```
 
 **Request Bodies**
@@ -85,7 +85,7 @@ All route controllers must return an array.  This array is used to create the re
 JSON is the default response type.  It comes with an envelope wrapper, so responses will look like this:
 
 ```
-GET /example?q=(popular:true)&offset=1&limit=2&fields=(name,location,prince)
+GET /v1/example?q=(popular:true)&offset=1&limit=2&fields=(name,location,prince)
 
 {
     "_meta": {
@@ -167,15 +167,15 @@ Example Controller
 The Example Controller sets up a route at /example and implements all of the above query parameters.
 You can mix and match any of these queries:
 
->  api.example.local/example?q=(name:Belle)
+>  api.example.local/v1/example?q=(name:Belle)
 
->  api.example.local/example?fields=(name,location)
+>  api.example.local/v1/example?fields=(name,location)
 
->  api.example.local/example/5?fields=(name)
+>  api.example.local/v1/example/5?fields=(name)&envelope=false
 
->  api.example.local/example?type=csv
+>  api.example.local/v1/example?type=csv
 
->  api.example.local/example?q=(popular:true)&offset=1&limit=2&type=csv&fields=(name,location)
+>  api.example.local/v1/example?q=(popular:true)&offset=1&limit=2&type=csv&fields=(name,location)
 
 [phalcon]: http://phalconphp.com/index
 [phalconDocs]: http://docs.phalconphp.com/en/latest/
