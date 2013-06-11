@@ -163,11 +163,11 @@ $app->before(function() use ($app, $di) {
  * We can also set the handler to be lazy loaded.  Collections can share a common prefix.
  * @var $exampleCollection
  */
-$exampleCollection = new Phalcon\Mvc\Micro\Collection();
+$exampleCollection = new \Phalcon\Mvc\Micro\Collection();
 	$exampleCollection->setLazy(true)
 		// VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
 		->setPrefix('/v1/example') 
-		->setHandler(new PhalconRest\Controllers\ExampleController());
+		->setHandler(new \PhalconRest\Controllers\ExampleController());
 
 	// Set Access-Control-Allow headers.
 	$exampleCollection->options('/', 'optionsBase');
