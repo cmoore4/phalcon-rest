@@ -71,7 +71,7 @@ I've tried to comment them extensively.</p>
 
 <p><strong>URL Structure</strong></p>
 
-<pre><code>/path1/path2?q=(search1:value1,search2:value2)&amp;fields=(field1,field2,field3)&amp;limit=10&amp;offest=20&amp;type=csv&amp;suppress_error_codes=true
+<pre><code>/v1/path1/path2?q=(search1:value1,search2:value2)&amp;fields=(field1,field2,field3)&amp;limit=10&amp;offest=20&amp;type=csv&amp;suppress_error_codes=true
 </code></pre>
 
 <p><strong>Request Bodies</strong></p>
@@ -132,7 +132,7 @@ responsible for checking the response body to ensure a valid response.</p>
 
 <p>JSON is the default response type.  It comes with an envelope wrapper, so responses will look like this:</p>
 
-<pre><code>GET /example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;fields=(name,location,prince)
+<pre><code>GET /v1/example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;fields=(name,location,prince)
 
 {
     "_meta": {
@@ -211,15 +211,15 @@ returns a nicely formatted JSON response to the client.</p>
 You can mix and match any of these queries:</p>
 
 <blockquote>
-<p>api.example.local/example?q=(name:Belle)</p>
+<p>api.example.local/v1/example?q=(name:Belle)</p>
 
-<p>api.example.local/example?fields=(name,location)</p>
+<p>api.example.local/v1/example?fields=(name,location)</p>
 
-<p>api.example.local/example/5?fields=(name)</p>
+<p>api.example.local/v1/example/5?fields=(name)&amp;envelope=false</p>
 
-<p>api.example.local/example?type=csv</p>
+<p>api.example.local/v1/example?type=csv</p>
 
-<p>api.example.local/example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;type=csv&amp;fields=(name,location)</p>
+<p>api.example.local/v1/example?q=(popular:true)&amp;offset=1&amp;limit=2&amp;type=csv&amp;fields=(name,location)</p>
 </blockquote>
       </section>
 
