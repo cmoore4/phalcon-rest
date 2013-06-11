@@ -28,6 +28,8 @@ class JSONResponse extends Response{
 			$records = $this->arrayKeysToSnake($records);
 		}
 
+		$etag = md5($records);
+
 		if($this->envelope){
 			// Provide an envelope for JSON responses.  '_meta' and 'records' are the objects. 
 			$message = array();
@@ -43,6 +45,7 @@ class JSONResponse extends Response{
 		}
 		
 		$response->setContentType('application/json');
+		$response->setHeader('E-Tag', $etag);
 		
 		// HEAD requests are detected in the parent constructor. HEAD does everything exactly the
 		// same as GET, but contains no body.
