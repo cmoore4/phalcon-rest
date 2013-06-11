@@ -52,24 +52,26 @@ resolution across classes, a PSR-0 compliant autoloader, MVC architecture (or no
 handlers for database, flatfile, redis, etc.. and a ton of additional features.</p>
 
 <p>The purpose of this project is to establish a base project with Phalcon that uses the best practices
-of both the Phalcon Framework and <a href="https://blog.apigee.com/detail/announcement_new_ebook_on_web_api_design">API Design</a>, as discussed in the seminal work from Apigee.</p>
+from the Phalcon Framework to implement best practises of <a href="https://blog.apigee.com/detail/announcement_new_ebook_on_web_api_design">API Design</a>.</p>
 
-<p>This project establishes much of the boilerplate needed to create a well-designed API.  It doesn't seek
-to implement any of your program logic, merely facilitate the parsing of requests, show how an auth
-system could be incorporated, show simple cache strategies, and stub out basic response handling.</p>
+<p>Writing routes that respond with JSON is easy in any of the major frameworks.  What I've done here is to 
+go beyond that and extend the framework such that APIs written using this project are pragmatically 
+REST-ish and have conveniance methods and patterns implemented that are more than a simple
+'echo json_encode($array)'.</p>
+
+<p>Provided are robust Error messages, controllers that parse searching strings and partial responsese, 
+response classes for sending multiple MIME types based on the request, and examples of how to implement
+authentication in a few ways, as well as a few tempaltes for implementing common REST-ish tasks.</p>
 
 <p>It is highly recommended to read through the index.php, HTTPException.php and RESTController.php files, as
 I've tried to comment them extensively.</p>
-
-<p>Also included is an .htaccess file for Apache servers that will help with CORS requests-- though it is
-not compliant with REST, it does help for development purposes.</p>
 
 <h2>
 <a name="api-assumptions" class="anchor" href="#api-assumptions"><span class="octicon octicon-link"></span></a>API Assumptions</h2>
 
 <p><strong>URL Structure</strong></p>
 
-<pre><code>/path1/path2?q=(search1:value1,search2:value2)&amp;fields=field1,field2,field3&amp;limit=10&amp;offest=20&amp;type=csv&amp;suppress_error_codes=true
+<pre><code>/path1/path2?q=(search1:value1,search2:value2)&amp;fields=(field1,field2,field3)&amp;limit=10&amp;offest=20&amp;type=csv&amp;suppress_error_codes=true
 </code></pre>
 
 <p><strong>Request Bodies</strong></p>
