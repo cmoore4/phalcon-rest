@@ -3,10 +3,15 @@ namespace PhalconRest\Responses;
 
 class Response extends \Phalcon\DI\Injectable{
 
+	protected $head = false;
+
 	public function __construct(){
 		//parent::__construct();
 		$di = \Phalcon\DI::getDefault();
 		$this->setDI($di);
+		if(strtolower($this->di->get('request')->getMethod()) === 'head'){
+			$this->head = true;
+		}
 	}
 
 	/**

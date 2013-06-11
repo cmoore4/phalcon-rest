@@ -41,6 +41,14 @@ class ExampleController extends RESTController{
 		return array('Delete / stub');
 	}
 
+	public function put($id){
+		return array('Put / stub');
+	}
+
+	public function patch($id){
+		return array('Patch / stub');
+	}
+
 	public function search(){
 		$results = array();
 		foreach($this->exampleRecords as $record){

@@ -12,6 +12,7 @@ class JSONResponse extends Response{
 
 	public function send($records, $error=false){
 
+		// Error's come from HTTPException.  This helps set the proper envelope data
 		$response = $this->di->get('response');
 		$success = ($error) ? 'ERROR' : 'SUCCESS';
 
@@ -42,7 +43,13 @@ class JSONResponse extends Response{
 		}
 		
 		$response->setContentType('application/json');
-		$response->setJsonContent($message);
+		
+		// HEAD requests are detected in the parent constructor. HEAD does everything exactly the
+		// same as GET, but contains no body.
+		if(!$this->head){
+			$response->setJsonContent($message);
+		}
+		
 		$response->send();
 
 		return $this;
