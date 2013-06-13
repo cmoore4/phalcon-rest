@@ -158,6 +158,20 @@ $app->before(function() use ($app, $di) {
 	return false;
 });*/
 
+
+/**
+ * The base route return the list of defined routes for the application.
+ */
+$app->get('/', function() use ($app){
+	$routes = $app->getRouter()->getRoutes();
+	$routeDefinitions = array('GET'=>array(), 'POST'=>array(), 'PUT'=>array(), 'PATCH'=>array(), 'DELETE'=>array(), 'HEAD'=>array(), 'OPTIONS'=>array());
+	foreach($routes as $route){
+		$method = $route->getHttpMethods();
+		$routeDefinitions[$method][] = $route->getPattern();
+	}
+	return $routeDefinitions;
+});
+
 /**
  * Collections let us define groups of routes that will all use the same controller.
  * We can also set the handler to be lazy loaded.  Collections can share a common prefix.
