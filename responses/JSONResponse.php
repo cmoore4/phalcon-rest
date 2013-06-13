@@ -28,7 +28,7 @@ class JSONResponse extends Response{
 			$records = $this->arrayKeysToSnake($records);
 		}
 
-		$etag = md5($records);
+		$etag = md5(serialize($records));
 
 		if($this->envelope){
 			// Provide an envelope for JSON responses.  '_meta' and 'records' are the objects. 
