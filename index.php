@@ -161,6 +161,8 @@ $app->before(function() use ($app, $di) {
 
 /**
  * The base route return the list of defined routes for the application.
+ * This is not strictly REST compliant, but it helps to base API documentation off of.
+ * By calling this, you can quickly see a list of all routes and their methods.
  */
 $app->get('/', function() use ($app){
 	$routes = $app->getRouter()->getRoutes();
