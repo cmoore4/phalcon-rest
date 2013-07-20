@@ -57,6 +57,15 @@ $di->set('modelsCache', function() {
 });
 
 /**
+ * Database setup.  Here, we'll use a simple SQLite database of Disney Princesses.
+ */
+$di->set('db', function(){
+	return new \Phalcon\Db\Adapter\Pdo\Sqlite(array(
+		'data/database.sqlite'
+	));
+});
+
+/**
  * If our request contains a body, it has to be valid JSON.  This parses the 
  * body into a standard Object and makes that vailable from the DI.  If this service
  * is called from a function, and the request body is nto valid JSON or is empty,
