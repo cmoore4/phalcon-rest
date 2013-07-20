@@ -68,11 +68,18 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 
 
 	/**
-	 * Constructor calls the parse method.
+	 * Constructor, calls the parse method for the query string by default.
+	 * @param boolean $parseQueryString true Can be set to false if a controller needs to be called 
+	 *        from a different controller.
+	 * @return void
 	 */
-	public function __construct(){
+	public function __construct($parseQueryString = true){
 		parent::__construct();
-		$this->parseRequest($this->allowedFields);
+		if ($parseQueryString){
+			$this->parseRequest($this->allowedFields);
+		}
+
+		return;
 	}
 
 	/**
