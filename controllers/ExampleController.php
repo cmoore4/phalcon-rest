@@ -4,6 +4,16 @@ use \PhalconRest\Exceptions\HTTPException;
 
 class ExampleController extends RESTController{
 
+	/**
+	 * Sets which fields may be searched against, and which fields are allowed to be returned in
+	 * partial responses. 
+	 * @var array
+	 */
+	protected $allowedFields = array(
+		'search' => array('name', 'prince_name'),
+		'partials' => array('name', 'location', 'prince_name', 'popular')
+	);
+
 	private $exampleRecords = array(
 		array('id' => 1, 'name' => 'Ariel', 'location' => 'Under The Sea', 'prince_name' => 'Eric', 'popular' => 'false'),
 		array('id' => 2, 'name' => 'Snow White', 'location' => 'Forest', 'prince_name' => 'The Prince', 'popular' => 'true'),

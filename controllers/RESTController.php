@@ -146,7 +146,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 			$this->searchFields = $this->parseSearchParameters($searchParams);
 
 			// This handly snippet determines if searchFields is a strict subset of allowedFields['search']
-			if(!array_unique($allowedFields['search'] + $this->searchFields) === $allowedFields['search']){
+			if(array_diff(array_keys($this->searchFields), $this->allowedFields['search'])){
 				throw new HTTPException(
 					"The fields you specified cannot be searched.", 
 					401,
@@ -165,7 +165,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 			$this->partialFields = $this->parsePartialFields($fields);
 
 			// Determines if fields is a strict subset of allowed fields
-			if(!array_unique($allowedFields['partials'] + $this->partialFields) === $allowedFields['partials']){
+			if(array_diff($this->partialFields, $this->allowedFields['partials'])){
 				throw new HTTPException(
 					"The fields you asked for cannot be returned.", 
 					401,
