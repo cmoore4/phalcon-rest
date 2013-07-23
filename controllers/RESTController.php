@@ -70,7 +70,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	/**
 	 * Constructor, calls the parse method for the query string by default.
 	 * @param boolean $parseQueryString true Can be set to false if a controller needs to be called 
-	 *        from a different controller.
+	 *        from a different controller, bypassing the $allowedFields parse
 	 * @return void
 	 */
 	public function __construct($parseQueryString = true){
@@ -211,6 +211,37 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 		$response->setHeader('Access-Control-Allow-Headers', "origin, x-requested-with, content-type");
 		$response->setHeader('Access-Control-Max-Age', '86400');
 		return true;
+	}
+
+	/**
+	 * Should be called by methods in the controllers that need to output results to the HTTP Response.
+	 * Ensures that arrays conform to the patterns required by the Response objects.
+	 *
+	 * @param  array $recordsArray Array of records to format as return output
+	 * @return array               Output array.  If there are records (even 1), every record will be an array ex: array(array('id'=>1),array('id'=>2))
+	 */
+	protected function respond($recordsArray){
+
+		if(!is_array($recordsArray)){
+			// This is bad.  Throw a 500.  Responses should always be arrays.
+			throw new HTTPException(
+				"An error occured while retrieving records.",
+				500,
+				array(
+					'dev' => 'The records returned were malformed.',
+					'internalCode' => 'RESP1000',
+					'more' => ''
+				)
+			);
+		}
+
+		// No records returned, so return an empty array
+		if(count($recordsArray) < 1){
+			return array();
+		}
+
+		return array($recordsArray);
+
 	}
 
 

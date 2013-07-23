@@ -37,7 +37,16 @@ class JSONResponse extends Response{
 				'status' => $success,
 				'count' => ($error) ? 1 : count($records)
 			); 
-			$message['records'] = $records;
+
+			// Handle 0 record responses, or assign the records
+			if($message['_meta']['count'] === 0){
+				// This is required to make the response JSON return an empty JS object.  Without
+				// this, the JSON return an empty array:  [] instead of {}
+				$message['records'] = new \stdClass();
+			} else {
+				$message['records'] = $records;
+			}
+
 		} else {
 			$response->setHeader('X-Record-Count', count($records));
 			$response->setHeader('X-Status', $success);
