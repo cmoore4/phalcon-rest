@@ -4,5 +4,5 @@
 <%= scope.to_hash.reject { |k,v| !( k.is_a?(String) && v.is_a?(String) ) }.to_yaml %>
 
 # Custom Options
-<%= options['opt_a'] %>
-<%= options['opt_b'] %>
+<%= @options['opt_a'] %>
+<%= @options['opt_b'] %>

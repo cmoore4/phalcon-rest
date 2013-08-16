@@ -125,6 +125,7 @@ class apache::params {
   $service_autorestart = true
   $service_requires = Package['apache']
   $absent = false
+  $version = ''
   $disable = false
   $disableboot = false
 

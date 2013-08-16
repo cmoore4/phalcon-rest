@@ -13,7 +13,7 @@ use \PhalconRest\Exceptions\HTTPException;
  *     limit=10
  *   Partials:
  *     offset=20
- *   
+ *
  */
 class RESTController extends \PhalconRest\Controllers\BaseController{
 
@@ -69,7 +69,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 
 	/**
 	 * Constructor, calls the parse method for the query string by default.
-	 * @param boolean $parseQueryString true Can be set to false if a controller needs to be called 
+	 * @param boolean $parseQueryString true Can be set to false if a controller needs to be called
 	 *        from a different controller, bypassing the $allowedFields parse
 	 * @return void
 	 */
@@ -83,20 +83,20 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	}
 
 	/**
-	 * Parses out the search parameters from a request.  
+	 * Parses out the search parameters from a request.
 	 * Unparsed, they will look like this:
 	 *    (name:Benjamin Framklin,location:Philadelphia)
 	 * Parsed:
-	 *     array('name'=>'Benjamin Franklin', 'location'=>'Philadelphia') 
+	 *     array('name'=>'Benjamin Franklin', 'location'=>'Philadelphia')
 	 * @param  string $unparsed Unparsed search string
 	 * @return array            An array of fieldname=>value search parameters
 	 */
 	protected function parseSearchParameters($unparsed){
-		
+
 		// Strip parens that come with the request string
 		$unparsed = trim($unparsed, '()');
-		
-		// Now we have an array of "key:value" strings.  
+
+		// Now we have an array of "key:value" strings.
 		$splitFields = explode(',', $unparsed);
 		$mapped = array();
 
@@ -126,7 +126,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * Main method for parsing a query string.
 	 * Finds search paramters, partial response fields, limits, and offsets.
 	 * Sets Controller fields for these variables.
-	 * 
+	 *
 	 * @param  array $allowedFields Allowed fields array for search and partials
 	 * @return boolean              Always true if no exception is thrown
 	 */
@@ -134,13 +134,13 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 		$request = $this->di->get('request');
 		$searchParams = $request->get('q', null, null);
 		$fields = $request->get('fields', null, null);
-		
+
 		// Set limits and offset, elsewise allow them to have defaults set in the Controller
 		$this->limit = ($request->get('limit', null, null)) ?: $this->limit;
 		$this->offset = ($request->get('offset', null, null)) ?: $this->offset;
 
 		// If there's a 'q' parameter, parse the fields, then determine that all the fields in the search
-		// are allowed to be searched from $allowedFields['search'] 
+		// are allowed to be searched from $allowedFields['search']
 		if($searchParams){
 			$this->isSearch = true;
 			$this->searchFields = $this->parseSearchParameters($searchParams);
@@ -148,7 +148,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 			// This handly snippet determines if searchFields is a strict subset of allowedFields['search']
 			if(array_diff(array_keys($this->searchFields), $this->allowedFields['search'])){
 				throw new HTTPException(
-					"The fields you specified cannot be searched.", 
+					"The fields you specified cannot be searched.",
 					401,
 					array(
 						'dev' => 'You requested to search fields that are not available to be searched.',
@@ -167,7 +167,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 			// Determines if fields is a strict subset of allowed fields
 			if(array_diff($this->partialFields, $this->allowedFields['partials'])){
 				throw new HTTPException(
-					"The fields you asked for cannot be returned.", 
+					"The fields you asked for cannot be returned.",
 					401,
 					array(
 						'dev' => 'You requested to return fields that are not available to be returned in partial responses.',
@@ -185,7 +185,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * Origin is allowed from all urls.  Setting it here using the Origin header from the request
 	 * allows multiple Origins to be served.  It is done this way instead of with a wildcard '*'
 	 * because wildcard requests are not supported when a request needs credentials.
-	 * 
+	 *
 	 * @return true
 	 */
 	public function optionsBase(){
@@ -200,7 +200,7 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 
 	/**
 	 * Provides a CORS policy for routes like '/users/123' that represent a specific resource
-	 * 
+	 *
 	 * @return true
 	 */
 	public function optionsOne(){

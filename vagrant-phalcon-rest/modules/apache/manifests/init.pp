@@ -190,6 +190,9 @@
 #   This is used by monitor, firewall and puppi (optional) components
 #   Can be defined also by the (top scope) variable $apache_protocol
 #
+# [*version*]
+#   The version of apache package to be installed
+#
 #
 # == Examples
 #
@@ -243,7 +246,8 @@ class apache (
   $log_dir             = params_lookup( 'log_dir' ),
   $log_file            = params_lookup( 'log_file' ),
   $port                = params_lookup( 'port' ),
-  $protocol            = params_lookup( 'protocol' )
+  $protocol            = params_lookup( 'protocol' ),
+  $version             = params_lookup( 'version' )
   ) inherits apache::params {
 
   $bool_source_dir_purge=any2bool($source_dir_purge)
@@ -266,7 +270,10 @@ class apache (
   ### Definition of some variables used in the module
   $manage_package = $apache::bool_absent ? {
     true  => 'absent',
-    false => 'present',
+    false => $apache::version ? {
+        ''      => 'present',
+        default => $apache::version,
+    },
   }
 
   $manage_service_enable = $apache::bool_disableboot ? {

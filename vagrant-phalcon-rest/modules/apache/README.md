@@ -57,6 +57,12 @@ For detailed info about the logic and usage patterns of Example42 modules read R
           audit_only => true
         }
 
+* Install apache with a specific version
+
+        class { "apache":
+          version =>  '2.2.22'
+        }
+
 
 ## USAGE - Default server management
 * Simple way to manage default apache configuration

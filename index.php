@@ -5,7 +5,7 @@ use Phalcon\DI\FactoryDefault as DefaultDI,
 	Phalcon\Config\Adapter\Ini as IniConfig,
 	Phalcon\Loader;
 
-/** 
+/**
  * By default, namespaces are assumed to be the same as the path.
  * This function allows us to assign namespaces to alternative folders.
  * It also puts the classes into the PSR-0 autoLoader.
@@ -24,6 +24,15 @@ $loader->registerNamespaces(array(
  * @var DefaultDI
  */
 $di = new DefaultDI();
+
+
+/**
+ * Return array of the Collections, which define a group of routes, from
+ * routes/collections.  These will be mounted into the app itself later.
+ */
+$di->set('collections', function(){
+	return include('./routes/routeLoader.php');
+});
 
 /**
  * $di's setShared method provides a singleton instance.
@@ -106,7 +115,7 @@ $app->setDI($di);
  */
 
 /*
-This will require changes to fit your application structure.  
+This will require changes to fit your application structure.
 It supports Basic Auth, Session auth, and Exempted routes.
 
 It also allows all Options requests, as those tend to not come with
@@ -135,7 +144,7 @@ $app->before(function() use ($app, $di) {
 		return true;
 	}
 
-	
+
 	// All options requests get a 200, then die
 	if($app->__get('request')->getMethod() == 'OPTIONS'){
 		$app->response->setStatusCode(200, 'OK')->sendHeaders();
@@ -169,6 +178,14 @@ $app->before(function() use ($app, $di) {
 
 
 /**
+ * Mount all of the collections, which makes the routes active.
+ */
+foreach($di->get('collections') as $collection){
+	$app->mount($collection);
+}
+
+
+/**
  * The base route return the list of defined routes for the application.
  * This is not strictly REST compliant, but it helps to base API documentation off of.
  * By calling this, you can quickly see a list of all routes and their methods.
@@ -182,37 +199,6 @@ $app->get('/', function() use ($app){
 	}
 	return $routeDefinitions;
 });
-
-/**
- * Collections let us define groups of routes that will all use the same controller.
- * We can also set the handler to be lazy loaded.  Collections can share a common prefix.
- * @var $exampleCollection
- */
-$exampleCollection = new \Phalcon\Mvc\Micro\Collection();
-	$exampleCollection->setLazy(true)
-		// VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
-		->setPrefix('/v1/example') 
-		// Must be a string in order to support lazy loading
-		->setHandler('\PhalconRest\Controllers\ExampleController');
-
-	// Set Access-Control-Allow headers.
-	$exampleCollection->options('/', 'optionsBase');
-	$exampleCollection->options('/{id}', 'optionsOne');
-
-	// First paramter is the route, which with the collection prefix here would be GET /example/
-	// Second paramter is the function name of the Controller.
-	$exampleCollection->get('/', 'get');
-	// This is exactly the same execution as GET, but the Response has no body.
-	$exampleCollection->head('/', 'get');
-
-	// $id will be passed as a parameter to the Controller's specified function
-	$exampleCollection->get('/{id:[0-9]+}', 'getOne');
-	$exampleCollection->head('/{id:[0-9]+}', 'getOne');
-	$exampleCollection->post('/', 'post');
-	$exampleCollection->delete('/{id:[0-9]+}', 'delete');
-	$exampleCollection->put('/{id:[0-9]+}', 'put');
-	$exampleCollection->patch('/{id:[0-9]+}', 'patch');
-$app->mount($exampleCollection);
 
 /**
  * After a route is run, usually when its Controller returns a final value,
@@ -236,16 +222,16 @@ $app->after(function() use ($app) {
 
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
-		
+
 		$response = new \PhalconRest\Responses\JSONResponse();
 		$response->useEnvelope(true) //this is default behavior
 			->convertSnakeCase(true) //this is also default behavior
 			->send($records);
-		
+
 		return;
 	}
 	else if($app->request->get('type') == 'csv'){
-		
+
 		$records = $app->getReturnedValue();
 		$response = new \PhalconRest\Responses\CSVResponse();
 		$response->useHeaderRow(true)->send($records);
@@ -259,7 +245,7 @@ $app->after(function() use ($app) {
 			array(
 				'dev' => 'Could not understand type specified by type paramter in query string.',
 				'internalCode' => 'NF1000',
-				'more' => 'Type may not be implemented. Choose either "csv" or "json"'	
+				'more' => 'Type may not be implemented. Choose either "csv" or "json"'
 			)
 		);
 	}
@@ -283,7 +269,7 @@ $app->notFound(function () use ($app) {
 
 /**
  * If the application throws an HTTPException, send it on to the client as json.
- * Elsewise, just log it.  
+ * Elsewise, just log it.
  * TODO:  Improve this.
  */
 set_exception_handler(function($exception) use ($app){

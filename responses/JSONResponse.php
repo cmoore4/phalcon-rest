@@ -31,12 +31,12 @@ class JSONResponse extends Response{
 		$etag = md5(serialize($records));
 
 		if($this->envelope){
-			// Provide an envelope for JSON responses.  '_meta' and 'records' are the objects. 
+			// Provide an envelope for JSON responses.  '_meta' and 'records' are the objects.
 			$message = array();
 			$message['_meta'] = array(
 				'status' => $success,
 				'count' => ($error) ? 1 : count($records)
-			); 
+			);
 
 			// Handle 0 record responses, or assign the records
 			if($message['_meta']['count'] === 0){
@@ -52,16 +52,16 @@ class JSONResponse extends Response{
 			$response->setHeader('X-Status', $success);
 			$message = $records;
 		}
-		
+
 		$response->setContentType('application/json');
 		$response->setHeader('E-Tag', $etag);
-		
+
 		// HEAD requests are detected in the parent constructor. HEAD does everything exactly the
 		// same as GET, but contains no body.
 		if(!$this->head){
 			$response->setJsonContent($message);
 		}
-		
+
 		$response->send();
 
 		return $this;

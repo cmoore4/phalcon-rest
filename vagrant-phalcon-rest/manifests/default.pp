@@ -61,12 +61,13 @@ apache::vhost { 'api.example.local':
   server_name   => 'api.example.local',
   docroot       => '/var/www/project',
   port          => '80',
-  env_variables => ['APP_ENV dev']
+  env_variables => ['APP_ENV dev'],
+  directory_allow_override => 'All'
 }
 
 
 /*  Add a ppa for PHP 5.4 */
-apt::ppa { 'ppa:ondrej/php5':
+apt::ppa { 'ppa:ondrej/php5-oldstable':
   before  => Class['php'],
 }
 

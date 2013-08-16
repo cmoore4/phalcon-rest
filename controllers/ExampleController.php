@@ -94,26 +94,26 @@ class ExampleController extends RESTController{
 		return $results;
 	}
 
-	private function array_remove_keys($array, $keys = array()) { 
-	  
-	    // If array is empty or not an array at all, don't bother 
-	    // doing anything else. 
-	    if(empty($array) || (! is_array($array))) { 
-	        return $array; 
+	private function array_remove_keys($array, $keys = array()) {
+
+	    // If array is empty or not an array at all, don't bother
+	    // doing anything else.
+	    if(empty($array) || (! is_array($array))) {
+	        return $array;
 	    }
-	  
-	    // At this point if $keys is not an array, we can't do anything with it. 
-	    if(! is_array($keys)) { 
-	        return $array; 
-	    } 
-	  
-	    // array_diff_key() expected an associative array. 
-	    $assocKeys = array(); 
-	    foreach($keys as $key) { 
-	        $assocKeys[$key] = true; 
-	    } 
-	  
-	    return array_diff_key($array, $assocKeys); 
+
+	    // At this point if $keys is not an array, we can't do anything with it.
+	    if(! is_array($keys)) {
+	        return $array;
+	    }
+
+	    // array_diff_key() expected an associative array.
+	    $assocKeys = array();
+	    foreach($keys as $key) {
+	        $assocKeys[$key] = true;
+	    }
+
+	    return array_diff_key($array, $assocKeys);
 	}
 
 }
