@@ -193,7 +193,8 @@ $exampleCollection = new \Phalcon\Mvc\Micro\Collection();
 		// VERSION NUMBER SHOULD BE FIRST URL PARAMETER, ALWAYS
 		->setPrefix('/v1/example') 
 		// Must be a string in order to support lazy loading
-		->setHandler('\PhalconRest\Controllers\ExampleController');
+		//->setHandler('\PhalconRest\Controllers\ExampleController');
+		->setHandler(new \PhalconRest\Controllers\ExampleController()); // fix #8
 
 	// Set Access-Control-Allow headers.
 	$exampleCollection->options('/', 'optionsBase');
