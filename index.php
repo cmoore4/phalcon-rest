@@ -1,9 +1,17 @@
 <?php
 
-use Phalcon\DI\FactoryDefault as DefaultDI,
-	Phalcon\Mvc\Micro\Collection,
-	Phalcon\Config\Adapter\Ini as IniConfig,
-	Phalcon\Loader;
+use Phalcon\DI\FactoryDefault as DefaultDI;
+use Phalcon\Mvc\Micro\Collection;
+use Phalcon\Config\Adapter\Ini as IniConfig;
+use Phalcon\Loader;
+use Phalcon\Session\Adapter\Files as Session;
+use Phalcon\Cache\Frontend\Data as FrontendCache;
+use Phalcon\Cache\Backend\File as BackendCache;
+use Phalcon\Db\Adapter\Pdo\Sqlite as DbAdapter;
+use Phalcon\Mvc\Micro as App;
+use PhalconRest\Responses\JSONResponse;
+use PhalconRest\Responses\CSVResponse;
+use PhalconRest\Exceptions\HTTPException;
 
 /**
  * By default, namespaces are assumed to be the same as the path.
@@ -45,7 +53,7 @@ $di->setShared('config', function() {
 
 // As soon as we request the session service, it will be started.
 $di->setShared('session', function(){
-	$session = new \Phalcon\Session\Adapter\Files();
+	$session = new Session();
 	$session->start();
 	return $session;
 });
@@ -53,12 +61,12 @@ $di->setShared('session', function(){
 $di->set('modelsCache', function() {
 
 	//Cache data for one day by default
-	$frontCache = new \Phalcon\Cache\Frontend\Data(array(
+	$frontCache = new FrontendCache(array(
 		'lifetime' => 3600
 	));
 
 	//File cache settings
-	$cache = new \Phalcon\Cache\Backend\File($frontCache, array(
+	$cache = new BackendCache($frontCache, array(
 		'cacheDir' => __DIR__ . '/cache/'
 	));
 
@@ -69,7 +77,7 @@ $di->set('modelsCache', function() {
  * Database setup.  Here, we'll use a simple SQLite database of Disney Princesses.
  */
 $di->set('db', function(){
-	return new \Phalcon\Db\Adapter\Pdo\Sqlite(array(
+	return new DbAdapter(array(
 		'data/database.sqlite'
 	));
 });
@@ -105,8 +113,7 @@ $di->setShared('requestBody', function() {
  * For APIs, this is ideal.  This is as opposed to the more robust MVC Application
  * @var $app
  */
-$app = new Phalcon\Mvc\Micro();
-$app->setDI($di);
+$app = new App($di);
 
 /**
  * Before every request, make sure user is authenticated.
@@ -223,7 +230,7 @@ $app->after(function() use ($app) {
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
 
-		$response = new \PhalconRest\Responses\JSONResponse();
+		$response = new JSONResponse();
 		$response->useEnvelope(true) //this is default behavior
 			->convertSnakeCase(true) //this is also default behavior
 			->send($records);
@@ -233,13 +240,13 @@ $app->after(function() use ($app) {
 	else if($app->request->get('type') == 'csv'){
 
 		$records = $app->getReturnedValue();
-		$response = new \PhalconRest\Responses\CSVResponse();
+		$response = new CSVResponse();
 		$response->useHeaderRow(true)->send($records);
 
 		return;
 	}
 	else {
-		throw new \PhalconRest\Exceptions\HTTPException(
+		throw new HTTPException(
 			'Could not return results in specified format',
 			403,
 			array(
@@ -256,7 +263,7 @@ $app->after(function() use ($app) {
  * We set a 404 here unless there's a suppress error codes.
  */
 $app->notFound(function () use ($app) {
-	throw new \PhalconRest\Exceptions\HTTPException(
+	throw new HTTPException(
 		'Not Found.',
 		404,
 		array(
