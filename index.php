@@ -280,10 +280,12 @@ $app->notFound(function () use ($app) {
  * TODO:  Improve this.
  */
 set_exception_handler(function($exception) use ($app){
-	//HTTPException's send method provides the correct response headers and body
-	if(is_a($exception, 'PhalconRest\\Exceptions\\HTTPException')){
+	// HTTPException's send method provides the correct response headers and body
+	if (is_a($exception, 'PhalconRest\\Exceptions\\HTTPException')) {
 		$exception->send();
 	}
+
+	error_log(sprintf('%s: %s at %s', get_class($exception), $this->getFile(), $this->getLine()));
 	error_log($exception);
 	error_log($exception->getTraceAsString());
 });

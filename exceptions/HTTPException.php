@@ -1,14 +1,22 @@
 <?php
+
 namespace PhalconRest\Exceptions;
 
-class HTTPException extends \Exception{
+use PhalconRest\Responses\JSONResponse;
+use PhalconRest\Responses\CSVResponse;
+use Phalcon\DI;
+
+
+class HTTPException extends \Exception
+{
 
 	public $devMessage;
 	public $errorCode;
 	public $response;
 	public $additionalInfo;
 
-	public function __construct($message, $code, $errorArray){
+	public function __construct($message, $code, $errorArray)
+	{
 		$this->message = $message;
 		$this->devMessage = @$errorArray['dev'];
 		$this->errorCode = @$errorArray['internalCode'];
@@ -17,14 +25,15 @@ class HTTPException extends \Exception{
 		$this->response = $this->getResponseDescription($code);
 	}
 
-	public function send(){
-		$di = \Phalcon\DI::getDefault();
+	public function send()
+	{
+		$di = DI::getDefault();
 
 		$res = $di->get('response');
 		$req = $di->get('request');
 		
-			//query string, filter, default
-		if(!$req->get('suppress_response_codes', null, null)){
+		// query string, filter, default
+		if (!$req->get('suppress_response_codes', null, null)){
 			$res->setStatusCode($this->getCode(), $this->response)->sendHeaders();
 		} else {
 			$res->setStatusCode('200', 'OK')->sendHeaders();
@@ -38,20 +47,15 @@ class HTTPException extends \Exception{
 			'applicationCode' => $this->errorCode,
 		);
 
-		if(!$req->get('type') || $req->get('type') == 'json'){
-			$response = new \PhalconRest\Responses\JSONResponse();
+		if (!$req->get('type') || $req->get('type') == 'json') {
+			$response = new JSONResponse();
 			$response->send($error, true);	
 			return;
-		} else if($req->get('type') == 'csv'){
-			$response = new \PhalconRest\Responses\CSVResponse();
+		} else if ($req->get('type') == 'csv') {
+			$response = new CSVResponse();
 			$response->send(array($error));
 			return;
 		}
-		
-		error_log(
-			'HTTPException: ' . $this->getFile() .
-			' at ' . $this->getLine()
-		);
 
 		return true;
 	}
