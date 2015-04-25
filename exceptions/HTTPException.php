@@ -4,30 +4,48 @@ namespace PhalconRest\Exceptions;
 
 use PhalconRest\Responses\JSONResponse;
 use PhalconRest\Responses\CSVResponse;
-use Phalcon\DI;
+use Phalcon\Di;
 
 
 class HTTPException extends \Exception
 {
-
+	/**
+	 * Message for developers
+	 * @var string
+	 */
 	public $devMessage;
+
+	/**
+	 * Internal error code
+	 * @var string
+	 */
 	public $errorCode;
+
+	/**
+	 * Response description
+	 * @var string
+	 */
 	public $response;
+
+	/**
+	 * Additional info
+	 * @var string
+	 */
 	public $additionalInfo;
 
 	public function __construct($message, $code, $errorArray)
 	{
 		$this->message = $message;
-		$this->devMessage = @$errorArray['dev'];
-		$this->errorCode = @$errorArray['internalCode'];
+		$this->devMessage = isset($errorArray['dev']) ? $errorArray['dev'] : null;
+		$this->errorCode = isset($errorArray['internalCode']) ? $errorArray['internalCode'] : null;
 		$this->code = $code;
-		$this->additionalInfo = @$errorArray['more'];
+		$this->additionalInfo = isset($errorArray['more']) ? $errorArray['more'] : null;
 		$this->response = $this->getResponseDescription($code);
 	}
 
 	public function send()
 	{
-		$di = DI::getDefault();
+		$di = Di::getDefault();
 
 		$res = $di->get('response');
 		$req = $di->get('request');
