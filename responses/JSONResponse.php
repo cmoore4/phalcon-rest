@@ -4,7 +4,16 @@ namespace PhalconRest\Responses;
 
 class JSONResponse extends Response
 {
+	/**
+	 * Envelope data?
+	 * @var boolean
+	 */
 	protected $snake = true;
+
+	/**
+	 * Convert JSON keys to snake_Case?
+	 * @var boolean
+	 */
 	protected $envelope = true;
 
 	public function send($records, $error = false)
@@ -22,7 +31,7 @@ class JSONResponse extends Response
 			$this->envelope = false;
 		}
 
-		// Most devs prefer camelCase to snake_Case in JSON, but this can be overriden here
+		// Most devs prefer camelCase to snake_Case in JSON, but this can be overridden here
 		if ($this->snake) {
 			$records = $this->arrayKeysToSnake($records);
 		}

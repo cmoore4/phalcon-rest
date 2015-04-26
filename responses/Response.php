@@ -18,9 +18,7 @@ class Response extends Injectable
 		$di = Di::getDefault();
 		$this->setDI($di);
 
-		if (0 === strcasecmp($this->di->get('request')->getMethod(), 'HEAD')) {
-			$this->head = true;
-		}
+		$this->head = (0 === strcasecmp($this->di->get('request')->getMethod(), 'HEAD'));
 	}
 
 	/**
@@ -46,13 +44,14 @@ class Response extends Injectable
 	}
 
 	/**
-	 * Replaces underscores with spaces, uppercases the first letters of each word, 
+	 * Replaces underscores with spaces, uppercases the first letters of each word,
 	 * lowercases the very first letter, then strips the spaces
 	 *
 	 * @param string $val String to be converted
-	 * @return string     Converted string
+	 * @return string
 	 */
-	protected function snakeToCamel($val) {
+	protected function snakeToCamel($val)
+	{
 		return str_replace(' ', '', lcfirst(ucwords(str_replace('_', ' ', $val))));
 	}
 
