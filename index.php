@@ -218,14 +218,14 @@ $app->get('/', function() use ($app){
 $app->after(function() use ($app) {
 
 	// OPTIONS have no body, send the headers, exit
-	if($app->request->getMethod() == 'OPTIONS'){
+	if ('OPTIONS' == $app->request->getMethod()){
 		$app->response->setStatusCode('200', 'OK');
 		$app->response->send();
 		return;
 	}
 
 	// Respond by default as JSON
-	if(!$app->request->get('type') || $app->request->get('type') == 'json'){
+	if (!$app->request->get('type') || 'json' == $app->request->get('type')){
 
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
@@ -236,19 +236,16 @@ $app->after(function() use ($app) {
 			->send($records);
 
 		return;
-	}
-	else if($app->request->get('type') == 'csv'){
-
+	} elseif ('csv' == $app->request->get('type')){
 		$records = $app->getReturnedValue();
 		$response = new CSVResponse();
 		$response->useHeaderRow(true)->send($records);
 
 		return;
-	}
-	else {
+	} else {
 		throw new HTTPException(
-			'Could not return results in specified format',
-			403,
+			'Unsupported Media Type.',
+			415,
 			array(
 				'dev' => 'Could not understand type specified by type paramter in query string.',
 				'internalCode' => 'NF1000',
