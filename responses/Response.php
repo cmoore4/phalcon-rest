@@ -1,15 +1,20 @@
 <?php
+
 namespace PhalconRest\Responses;
 
-class Response extends \Phalcon\DI\Injectable{
+use Phalcon\Di\Injectable;
+use Phalcon\Di;
+
+class Response extends Injectable
+{
 
 	protected $head = false;
 
-	public function __construct(){
-		//parent::__construct();
-		$di = \Phalcon\DI::getDefault();
+	public function __construct()
+	{
+		$di = Di::getDefault();
 		$this->setDI($di);
-		if(strtolower($this->di->get('request')->getMethod()) === 'head'){
+		if ('head' === strtolower($this->di->get('request')->getMethod())) {
 			$this->head = true;
 		}
 	}
