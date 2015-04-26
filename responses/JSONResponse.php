@@ -18,7 +18,7 @@ class JSONResponse extends Response
 		// If the query string 'envelope' is set to false, do not use the envelope.
 		// Instead, return headers.
 		$request = $this->di->get('request');
-		if ('false' === $request->get('envelope', null, null)) {
+		if ('false' === $request->get('envelope')) {
 			$this->envelope = false;
 		}
 

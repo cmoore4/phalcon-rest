@@ -33,7 +33,7 @@ class HTTPException extends \Exception
 	 */
 	public $additionalInfo;
 
-	public function __construct($message, $code, $errorArray)
+	public function __construct($message, $code, array $errorArray = array())
 	{
 		$this->message = $message;
 		$this->devMessage = isset($errorArray['dev']) ? $errorArray['dev'] : null;
@@ -51,7 +51,7 @@ class HTTPException extends \Exception
 		$req = $di->get('request');
 		
 		// query string, filter, default
-		if (!$req->get('suppress_response_codes', null, null)){
+		if (!$req->get('suppress_response_codes')){
 			$res->setStatusCode($this->getCode(), $this->response)->sendHeaders();
 		} else {
 			$res->setStatusCode('200', 'OK')->sendHeaders();
@@ -67,7 +67,7 @@ class HTTPException extends \Exception
 
 		if (!$req->get('type') || $req->get('type') == 'json') {
 			$response = new JSONResponse();
-			$response->send($error, true);	
+			$response->send($error, true);
 			return;
 		} else if ($req->get('type') == 'csv') {
 			$response = new CSVResponse();
