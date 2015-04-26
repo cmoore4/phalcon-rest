@@ -1,30 +1,57 @@
 <?php
+
 namespace PhalconRest\Exceptions;
 
-class HTTPException extends \Exception{
+use PhalconRest\Responses\JSONResponse;
+use PhalconRest\Responses\CSVResponse;
+use Phalcon\Di;
 
+
+class HTTPException extends \Exception
+{
+	/**
+	 * Message for developers
+	 * @var string
+	 */
 	public $devMessage;
+
+	/**
+	 * Internal error code
+	 * @var string
+	 */
 	public $errorCode;
+
+	/**
+	 * Response description
+	 * @var string
+	 */
 	public $response;
+
+	/**
+	 * Additional info
+	 * @var string
+	 */
 	public $additionalInfo;
 
-	public function __construct($message, $code, $errorArray){
+	public function __construct($message, $code, array $errorArray = array())
+	{
 		$this->message = $message;
-		$this->devMessage = @$errorArray['dev'];
-		$this->errorCode = @$errorArray['internalCode'];
+		$this->devMessage = isset($errorArray['dev']) ? $errorArray['dev'] : '';
+		$this->errorCode = isset($errorArray['internalCode']) ? $errorArray['internalCode'] : 0;
 		$this->code = $code;
-		$this->additionalInfo = @$errorArray['more'];
+		$this->additionalInfo = isset($errorArray['more']) ? $errorArray['more'] : '';
 		$this->response = $this->getResponseDescription($code);
 	}
 
-	public function send(){
-		$di = \Phalcon\DI::getDefault();
+	public function send()
+	{
+		$di = Di::getDefault();
 
 		$res = $di->get('response');
 		$req = $di->get('request');
 		
-			//query string, filter, default
-		if(!$req->get('suppress_response_codes', null, null)){
+		// query string, filter, default
+		if (!$req->get('suppress_response_codes')){
 			$res->setStatusCode($this->getCode(), $this->response)->sendHeaders();
 		} else {
 			$res->setStatusCode('200', 'OK')->sendHeaders();
@@ -38,20 +65,17 @@ class HTTPException extends \Exception{
 			'applicationCode' => $this->errorCode,
 		);
 
-		if(!$req->get('type') || $req->get('type') == 'json'){
-			$response = new \PhalconRest\Responses\JSONResponse();
-			$response->send($error, true);	
+		if (!$req->get('type') || 'json' == $req->get('type')) {
+			$response = new JSONResponse();
+			$response->send($error, true);
 			return;
-		} else if($req->get('type') == 'csv'){
-			$response = new \PhalconRest\Responses\CSVResponse();
+		} elseif ('csv' == $req->get('type')) {
+			$response = new CSVResponse();
 			$response->send(array($error));
 			return;
 		}
-		
-		error_log(
-			'HTTPException: ' . $this->getFile() .
-			' at ' . $this->getLine()
-		);
+
+		error_log(sprintf("Exception '%s' in %s:%s", get_class($this), $this->getFile(), $this->getLine()));
 
 		return true;
 	}

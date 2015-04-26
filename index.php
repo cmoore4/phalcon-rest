@@ -1,9 +1,17 @@
 <?php
 
-use Phalcon\DI\FactoryDefault as DefaultDI,
-	Phalcon\Mvc\Micro\Collection,
-	Phalcon\Config\Adapter\Ini as IniConfig,
-	Phalcon\Loader;
+use Phalcon\DI\FactoryDefault as DefaultDI;
+use Phalcon\Mvc\Micro\Collection;
+use Phalcon\Config\Adapter\Ini as IniConfig;
+use Phalcon\Loader;
+use Phalcon\Session\Adapter\Files as Session;
+use Phalcon\Cache\Frontend\Data as FrontendCache;
+use Phalcon\Cache\Backend\File as BackendCache;
+use Phalcon\Db\Adapter\Pdo\Sqlite as DbAdapter;
+use Phalcon\Mvc\Micro as App;
+use PhalconRest\Responses\JSONResponse;
+use PhalconRest\Responses\CSVResponse;
+use PhalconRest\Exceptions\HTTPException;
 
 /**
  * By default, namespaces are assumed to be the same as the path.
@@ -45,7 +53,7 @@ $di->setShared('config', function() {
 
 // As soon as we request the session service, it will be started.
 $di->setShared('session', function(){
-	$session = new \Phalcon\Session\Adapter\Files();
+	$session = new Session();
 	$session->start();
 	return $session;
 });
@@ -53,12 +61,12 @@ $di->setShared('session', function(){
 $di->set('modelsCache', function() {
 
 	//Cache data for one day by default
-	$frontCache = new \Phalcon\Cache\Frontend\Data(array(
+	$frontCache = new FrontendCache(array(
 		'lifetime' => 3600
 	));
 
 	//File cache settings
-	$cache = new \Phalcon\Cache\Backend\File($frontCache, array(
+	$cache = new BackendCache($frontCache, array(
 		'cacheDir' => __DIR__ . '/cache/'
 	));
 
@@ -69,7 +77,7 @@ $di->set('modelsCache', function() {
  * Database setup.  Here, we'll use a simple SQLite database of Disney Princesses.
  */
 $di->set('db', function(){
-	return new \Phalcon\Db\Adapter\Pdo\Sqlite(array(
+	return new DbAdapter(array(
 		'data/database.sqlite'
 	));
 });
@@ -79,13 +87,14 @@ $di->set('db', function(){
  * body into a standard Object and makes that vailable from the DI.  If this service
  * is called from a function, and the request body is nto valid JSON or is empty,
  * the program will throw an Exception.
+ * Warning! php://input is not available with enctype="multipart/form-data".
  */
 $di->setShared('requestBody', function() {
 	$in = file_get_contents('php://input');
-	$in = json_decode($in, FALSE);
+	$in = json_decode($in);
 
 	// JSON body could not be parsed, throw exception
-	if($in === null){
+	if (null === $in) {
 		throw new HTTPException(
 			'There was a problem understanding the data sent to the server by the application.',
 			409,
@@ -105,8 +114,7 @@ $di->setShared('requestBody', function() {
  * For APIs, this is ideal.  This is as opposed to the more robust MVC Application
  * @var $app
  */
-$app = new Phalcon\Mvc\Micro();
-$app->setDI($di);
+$app = new App($di);
 
 /**
  * Before every request, make sure user is authenticated.
@@ -211,41 +219,38 @@ $app->get('/', function() use ($app){
 $app->after(function() use ($app) {
 
 	// OPTIONS have no body, send the headers, exit
-	if($app->request->getMethod() == 'OPTIONS'){
+	if ('OPTIONS' == $app->request->getMethod()){
 		$app->response->setStatusCode('200', 'OK');
 		$app->response->send();
 		return;
 	}
 
 	// Respond by default as JSON
-	if(!$app->request->get('type') || $app->request->get('type') == 'json'){
+	if (!$app->request->get('type') || 'json' == $app->request->get('type')){
 
 		// Results returned from the route's controller.  All Controllers should return an array
 		$records = $app->getReturnedValue();
 
-		$response = new \PhalconRest\Responses\JSONResponse();
+		$response = new JSONResponse();
 		$response->useEnvelope(true) //this is default behavior
 			->convertSnakeCase(true) //this is also default behavior
 			->send($records);
 
 		return;
-	}
-	else if($app->request->get('type') == 'csv'){
-
+	} elseif ('csv' == $app->request->get('type')){
 		$records = $app->getReturnedValue();
-		$response = new \PhalconRest\Responses\CSVResponse();
+		$response = new CSVResponse();
 		$response->useHeaderRow(true)->send($records);
 
 		return;
-	}
-	else {
-		throw new \PhalconRest\Exceptions\HTTPException(
-			'Could not return results in specified format',
-			403,
+	} else {
+		throw new HTTPException(
+			'Unsupported Media Type.',
+			415,
 			array(
-				'dev' => 'Could not understand type specified by type paramter in query string.',
+				'dev' => 'Could not understand type specified by type parameter in query string.',
 				'internalCode' => 'NF1000',
-				'more' => 'Type may not be implemented. Choose either "csv" or "json"'
+				'more' => 'Type may not be implemented. Use either "csv" or "json"'
 			)
 		);
 	}
@@ -256,13 +261,13 @@ $app->after(function() use ($app) {
  * We set a 404 here unless there's a suppress error codes.
  */
 $app->notFound(function () use ($app) {
-	throw new \PhalconRest\Exceptions\HTTPException(
+	throw new HTTPException(
 		'Not Found.',
 		404,
 		array(
 			'dev' => 'That route was not found on the server.',
 			'internalCode' => 'NF1000',
-			'more' => 'Check route for mispellings.'
+			'more' => 'Check route for misspellings.'
 		)
 	);
 });
@@ -272,12 +277,14 @@ $app->notFound(function () use ($app) {
  * Elsewise, just log it.
  * TODO:  Improve this.
  */
-set_exception_handler(function($exception) use ($app){
-	//HTTPException's send method provides the correct response headers and body
-	if(is_a($exception, 'PhalconRest\\Exceptions\\HTTPException')){
+set_exception_handler(function($exception) use ($app) {
+	// HTTPException's send method provides the correct response headers and body
+	if (is_a($exception, 'PhalconRest\\Exceptions\\HTTPException')) {
 		$exception->send();
+	} else {
+		error_log($exception);
 	}
-	error_log($exception);
+	
 	error_log($exception->getTraceAsString());
 });
 

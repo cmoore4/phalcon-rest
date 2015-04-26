@@ -1,9 +1,11 @@
 <?php
+
 namespace PhalconRest\Controllers;
-use \PhalconRest\Exceptions\HTTPException;
 
-class ExampleController extends RESTController{
+use PhalconRest\Exceptions\HTTPException;
 
+class ExampleController extends RESTController
+{
 	/**
 	 * Sets which fields may be searched against, and which fields are allowed to be returned in
 	 * partial responses. 
@@ -24,8 +26,9 @@ class ExampleController extends RESTController{
 		array('id' => 7, 'name' => 'Mulan', 'location' => 'China', 'prince_name' => 'Li Shang', 'popular' => 'false')
 	);
 
-	public function get(){
-		if($this->isSearch){
+	public function get()
+	{
+		if ($this->isSearch) {
 			$results = $this->search();
 		} else {
 			$results = $this->exampleRecords;
@@ -34,41 +37,48 @@ class ExampleController extends RESTController{
 		return $this->respond($results);
 	}
 
-	public function getOne($id){
+	public function getOne($id)
+	{
 		$id--;
-		if(@count($this->exampleRecords[$id])){
+
+		if (@count($this->exampleRecords[$id])) {
 			return $this->respond($this->exampleRecords[$id]);
 		} else {
 			return $this->respond(array());
 		}
 	}
 
-	public function post(){
+	public function post()
+	{
 		return array('Post / stub');
 	}
 
-	public function delete($id){
+	public function delete($id)
+	{
 		return array('Delete / stub');
 	}
 
-	public function put($id){
+	public function put($id)
+	{
 		return array('Put / stub');
 	}
 
-	public function patch($id){
+	public function patch($id)
+	{
 		return array('Patch / stub');
 	}
 
-	public function search(){
+	public function search()
+	{
 		$results = array();
-		foreach($this->exampleRecords as $record){
+		foreach ($this->exampleRecords as $record) {
 			$match = true;
 			foreach ($this->searchFields as $field => $value) {
-				if(!(strpos($record[$field], $value) !== FALSE)){
+				if (!(strpos($record[$field], $value) !== FALSE)) {
 					$match = false;
 				}
 			}
-			if($match){
+			if ($match) {
 				$results[] = $record;
 			}
 		}
@@ -76,44 +86,47 @@ class ExampleController extends RESTController{
 		return $results;
 	}
 
-	public function respond($results){
-		if($this->isPartial){
+	protected function respond($results)
+	{
+		if ($this->isPartial) {
 			$newResults = array();
 			$remove = array_diff(array_keys($this->exampleRecords[0]), $this->partialFields);
-			foreach($results as $record){
+			foreach ($results as $record) {
 				$newResults[] = $this->array_remove_keys($record, $remove);
 			}
 			$results = $newResults;
 		}
-		if($this->offset){
+
+		if ($this->offset) {
 			$results = array_slice($results, $this->offset);
 		}
-		if($this->limit){
+
+		if ($this->limit) {
 			$results = array_slice($results, 0, $this->limit);
 		}
+
 		return $results;
 	}
 
-	private function array_remove_keys($array, $keys = array()) {
-
+	private function array_remove_keys($array, $keys = array())
+	{
 	    // If array is empty or not an array at all, don't bother
 	    // doing anything else.
-	    if(empty($array) || (! is_array($array))) {
+	    if (empty($array) || (!is_array($array))) {
 	        return $array;
 	    }
 
 	    // At this point if $keys is not an array, we can't do anything with it.
-	    if(! is_array($keys)) {
+	    if (!is_array($keys)) {
 	        return $array;
 	    }
 
 	    // array_diff_key() expected an associative array.
 	    $assocKeys = array();
-	    foreach($keys as $key) {
+	    foreach ($keys as $key) {
 	        $assocKeys[$key] = true;
 	    }
 
 	    return array_diff_key($array, $assocKeys);
 	}
-
 }
