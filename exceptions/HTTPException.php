@@ -36,10 +36,10 @@ class HTTPException extends \Exception
 	public function __construct($message, $code, array $errorArray = array())
 	{
 		$this->message = $message;
-		$this->devMessage = isset($errorArray['dev']) ? $errorArray['dev'] : null;
-		$this->errorCode = isset($errorArray['internalCode']) ? $errorArray['internalCode'] : null;
+		$this->devMessage = isset($errorArray['dev']) ? $errorArray['dev'] : '';
+		$this->errorCode = isset($errorArray['internalCode']) ? $errorArray['internalCode'] : 0;
 		$this->code = $code;
-		$this->additionalInfo = isset($errorArray['more']) ? $errorArray['more'] : null;
+		$this->additionalInfo = isset($errorArray['more']) ? $errorArray['more'] : '';
 		$this->response = $this->getResponseDescription($code);
 	}
 
@@ -65,11 +65,11 @@ class HTTPException extends \Exception
 			'applicationCode' => $this->errorCode,
 		);
 
-		if (!$req->get('type') || $req->get('type') == 'json') {
+		if (!$req->get('type') || 'json' == $req->get('type')) {
 			$response = new JSONResponse();
 			$response->send($error, true);
 			return;
-		} else if ($req->get('type') == 'csv') {
+		} elseif ('csv' == $req->get('type')) {
 			$response = new CSVResponse();
 			$response->send(array($error));
 			return;
