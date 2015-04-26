@@ -247,9 +247,9 @@ $app->after(function() use ($app) {
 			'Unsupported Media Type.',
 			415,
 			array(
-				'dev' => 'Could not understand type specified by type paramter in query string.',
+				'dev' => 'Could not understand type specified by type parameter in query string.',
 				'internalCode' => 'NF1000',
-				'more' => 'Type may not be implemented. Choose either "csv" or "json"'
+				'more' => 'Type may not be implemented. Use either "csv" or "json"'
 			)
 		);
 	}
