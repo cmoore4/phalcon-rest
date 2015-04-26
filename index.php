@@ -90,10 +90,10 @@ $di->set('db', function(){
  */
 $di->setShared('requestBody', function() {
 	$in = file_get_contents('php://input');
-	$in = json_decode($in, FALSE);
+	$in = json_decode($in);
 
 	// JSON body could not be parsed, throw exception
-	if($in === null){
+	if (null === $in) {
 		throw new HTTPException(
 			'There was a problem understanding the data sent to the server by the application.',
 			409,
