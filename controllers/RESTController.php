@@ -1,9 +1,12 @@
 <?php
+
 namespace PhalconRest\Controllers;
-use \PhalconRest\Exceptions\HTTPException;
+
+use PhalconRest\Exceptions\HTTPException;
 
 /**
  * Base RESTful Controller.
+ *
  * Supports queries with the following paramters:
  *   Searching:
  *     q=(searchField1:value1,searchField2:value2)
@@ -15,8 +18,8 @@ use \PhalconRest\Exceptions\HTTPException;
  *     offset=20
  *
  */
-class RESTController extends \PhalconRest\Controllers\BaseController{
-
+class RESTController extends BaseController
+{
 	/**
 	 * If query string contains 'q' parameter.
 	 * This indicates the request is searching an entity
@@ -73,9 +76,10 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 *        from a different controller, bypassing the $allowedFields parse
 	 * @return void
 	 */
-	public function __construct($parseQueryString = true){
+	public function __construct($parseQueryString = true)
+	{
 		parent::__construct();
-		if ($parseQueryString){
+		if ($parseQueryString) {
 			$this->parseRequest($this->allowedFields);
 		}
 
@@ -91,8 +95,8 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * @param  string $unparsed Unparsed search string
 	 * @return array            An array of fieldname=>value search parameters
 	 */
-	protected function parseSearchParameters($unparsed){
-
+	protected function parseSearchParameters($unparsed)
+	{
 		// Strip parens that come with the request string
 		$unparsed = trim($unparsed, '()');
 
@@ -118,7 +122,8 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * @param  string $unparsed Unparsed string of fields to return in partial response
 	 * @return array            Array of fields to return in partial response
 	 */
-	protected function parsePartialFields($unparsed){
+	protected function parsePartialFields($unparsed)
+	{
 		return explode(',', trim($unparsed, '()'));
 	}
 
@@ -130,7 +135,8 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * @param  array $allowedFields Allowed fields array for search and partials
 	 * @return boolean              Always true if no exception is thrown
 	 */
-	protected function parseRequest($allowedFields){
+	protected function parseRequest($allowedFields)
+	{
 		$request = $this->di->get('request');
 		$searchParams = $request->get('q', null, null);
 		$fields = $request->get('fields', null, null);
@@ -141,12 +147,12 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 
 		// If there's a 'q' parameter, parse the fields, then determine that all the fields in the search
 		// are allowed to be searched from $allowedFields['search']
-		if($searchParams){
+		if ($searchParams) {
 			$this->isSearch = true;
 			$this->searchFields = $this->parseSearchParameters($searchParams);
 
 			// This handly snippet determines if searchFields is a strict subset of allowedFields['search']
-			if(array_diff(array_keys($this->searchFields), $this->allowedFields['search'])){
+			if (array_diff(array_keys($this->searchFields), $this->allowedFields['search'])) {
 				throw new HTTPException(
 					"The fields you specified cannot be searched.",
 					401,
@@ -160,12 +166,12 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 
 		// If there's a 'fields' paramter, this is a partial request.  Ensures all the requested fields
 		// are allowed in partial responses.
-		if($fields){
+		if ($fields) {
 			$this->isPartial = true;
 			$this->partialFields = $this->parsePartialFields($fields);
 
 			// Determines if fields is a strict subset of allowed fields
-			if(array_diff($this->partialFields, $this->allowedFields['partials'])){
+			if (array_diff($this->partialFields, $this->allowedFields['partials'])) {
 				throw new HTTPException(
 					"The fields you asked for cannot be returned.",
 					401,
@@ -186,30 +192,36 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * allows multiple Origins to be served.  It is done this way instead of with a wildcard '*'
 	 * because wildcard requests are not supported when a request needs credentials.
 	 *
+	 * @link http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 	 * @return true
 	 */
-	public function optionsBase(){
+	public function optionsBase()
+	{
 		$response = $this->di->get('response');
 		$response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD');
 		$response->setHeader('Access-Control-Allow-Origin', $this->di->get('request')->header('Origin'));
 		$response->setHeader('Access-Control-Allow-Credentials', 'true');
-		$response->setHeader('Access-Control-Allow-Headers', "origin, x-requested-with, content-type");
+		$response->setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type');
 		$response->setHeader('Access-Control-Max-Age', '86400');
+
 		return true;
 	}
 
 	/**
 	 * Provides a CORS policy for routes like '/users/123' that represent a specific resource
 	 *
+	 * @link http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 	 * @return true
 	 */
-	public function optionsOne(){
+	public function optionsOne()
+	{
 		$response = $this->di->get('response');
 		$response->setHeader('Access-Control-Allow-Methods', 'GET, PUT, PATCH, DELETE, OPTIONS, HEAD');
 		$response->setHeader('Access-Control-Allow-Origin', $this->di->get('request')->header('Origin'));
 		$response->setHeader('Access-Control-Allow-Credentials', 'true');
-		$response->setHeader('Access-Control-Allow-Headers', "origin, x-requested-with, content-type");
+		$response->setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type');
 		$response->setHeader('Access-Control-Max-Age', '86400');
+
 		return true;
 	}
 
@@ -220,10 +232,10 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 	 * @param  array $recordsArray Array of records to format as return output
 	 * @return array               Output array.  If there are records (even 1), every record will be an array ex: array(array('id'=>1),array('id'=>2))
 	 */
-	protected function respond($recordsArray){
-
-		if(!is_array($recordsArray)){
-			// This is bad.  Throw a 500.  Responses should always be arrays.
+	protected function respond($recordsArray)
+	{
+		if (!is_array($recordsArray)){
+			// This is bad.  Throw a 500. Responses should always be arrays.
 			throw new HTTPException(
 				"An error occured while retrieving records.",
 				500,
@@ -236,13 +248,10 @@ class RESTController extends \PhalconRest\Controllers\BaseController{
 		}
 
 		// No records returned, so return an empty array
-		if(count($recordsArray) < 1){
+		if (count($recordsArray) < 1) {
 			return array();
 		}
 
 		return array($recordsArray);
-
 	}
-
-
 }
