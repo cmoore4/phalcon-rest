@@ -7,39 +7,48 @@ use Phalcon\Di;
 
 class Response extends Injectable
 {
-
+	/**
+	 * Is HEAD method?
+	 * @var boolean
+	 */
 	protected $head = false;
 
 	public function __construct()
 	{
 		$di = Di::getDefault();
 		$this->setDI($di);
-		if ('head' === strtolower($this->di->get('request')->getMethod())) {
+
+		if (0 === strcasecmp($this->di->get('request')->getMethod(), 'HEAD')) {
 			$this->head = true;
 		}
 	}
 
 	/**
 	 * In-Place, recursive conversion of array keys in snake_Case to camelCase
+	 *
 	 * @param  array $snakeArray Array with snake_keys
 	 * @return  no return value, array is edited in place
 	 */
-	protected function arrayKeysToSnake($snakeArray){
-		foreach($snakeArray as $k=>$v){
-			if (is_array($v)){
+	protected function arrayKeysToSnake(array $snakeArray)
+	{
+		foreach ($snakeArray as $k => $v) {
+			if (is_array($v)) {
 				$v = $this->arrayKeysToSnake($v);
 			}
+
 			$snakeArray[$this->snakeToCamel($k)] = $v;
-			if($this->snakeToCamel($k) != $k){
+			if ($this->snakeToCamel($k) != $k) {
 				unset($snakeArray[$k]);
 			}
 		}
+
 		return $snakeArray;
 	}
 
 	/**
 	 * Replaces underscores with spaces, uppercases the first letters of each word, 
 	 * lowercases the very first letter, then strips the spaces
+	 *
 	 * @param string $val String to be converted
 	 * @return string     Converted string
 	 */
