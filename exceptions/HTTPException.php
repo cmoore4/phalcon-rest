@@ -75,6 +75,8 @@ class HTTPException extends \Exception
 			return;
 		}
 
+		error_log(sprintf("Exception '%s' in %s:%s", get_class($this), $this->getFile(), $this->getLine()));
+
 		return true;
 	}
 

@@ -280,10 +280,10 @@ set_exception_handler(function($exception) use ($app) {
 	// HTTPException's send method provides the correct response headers and body
 	if (is_a($exception, 'PhalconRest\\Exceptions\\HTTPException')) {
 		$exception->send();
+	} else {
+		error_log($exception);
 	}
-
-	error_log(sprintf('%s: %s at %s', get_class($exception), $exception->getFile(), $exception->getLine()));
-	error_log($exception);
+	
 	error_log($exception->getTraceAsString());
 });
 
