@@ -87,6 +87,7 @@ $di->set('db', function(){
  * body into a standard Object and makes that vailable from the DI.  If this service
  * is called from a function, and the request body is nto valid JSON or is empty,
  * the program will throw an Exception.
+ * Warning! php://input is not available with enctype="multipart/form-data".
  */
 $di->setShared('requestBody', function() {
 	$in = file_get_contents('php://input');
