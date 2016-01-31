@@ -262,7 +262,7 @@ $app->notFound(function () use ($app) {
 		array(
 			'dev' => 'That route was not found on the server.',
 			'internalCode' => 'NF1000',
-			'more' => 'Check route for mispellings.'
+			'more' => 'Check route for misspellings.'
 		)
 	);
 });
